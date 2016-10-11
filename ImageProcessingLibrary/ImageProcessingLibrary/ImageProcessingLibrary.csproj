@@ -39,7 +39,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Exceptions\ImageException.cs" />
+    <Compile Include="Images\GrayLevelImage.cs" />
+    <Compile Include="Filters\PointFilters\PointFilter.cs" />
+    <Compile Include="Interfaces\IFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
