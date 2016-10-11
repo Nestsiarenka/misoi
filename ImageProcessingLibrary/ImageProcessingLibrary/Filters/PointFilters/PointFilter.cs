@@ -8,7 +8,7 @@ namespace ImageProcessingLibrary.Filters.PointFilters
         where T : struct, ICapacity
         where U : struct, ICapacity
     {
-        public Image<U> Filter(Image<T> image)
+        public virtual Image<U> Filter(Image<T> image)
         {
             var exitGrayLevelImage = new Image<U>(image.N, image.M);
 
@@ -23,6 +23,6 @@ namespace ImageProcessingLibrary.Filters.PointFilters
             return exitGrayLevelImage;
         }
 
-        public abstract U ProcessPixel(T pixel);
+        protected abstract U ProcessPixel(T pixel);
     }
 }

@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 using ImageProcessingLibrary.Capacities.Structures;
+using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Images;
+using ImageProcessingLibrary.Interfaces;
+using ImageProcessingLibrary.Utilities;
 
 namespace ImageProcessingLibraryUser
 {
@@ -18,11 +21,26 @@ namespace ImageProcessingLibraryUser
             var grayLevelImage = new Image<Gray>(4, 5)
             {
                 {1, 2, 3, 4},
-                {5, 6, 7, 8},
-                {9, 10, 11, 12},
-                {13, 14, 15, 16},
-                {16, 17, 18, 19}
+                {1, 2, 3, 4},
+                {4, 3, 2, 1},
+                {4, 3, 2, 1},
+                {1, 10, 10, 9}
             };
+            //1 - 4
+            //2 - 4
+            //3 - 4
+            //4 - 4
+            //5 - 1
+            //6 - 1
+            //7 - 1
+            //8 - 1
+            // AOD - 3
+
+            FSHS filter = new FSHS();
+            grayLevelImage = filter.Filter(grayLevelImage);
+
+            Histogram histogram = new Histogram(grayLevelImage);
+
 
             var rgbImage = new Image<RGB>(2, 2)
             {
@@ -39,7 +57,6 @@ namespace ImageProcessingLibraryUser
             {
                 var lol = val;
             }
-
 
             var variable = new byte[2, 3] {{1, 2, 3}, {1, 2, 3}};
 
