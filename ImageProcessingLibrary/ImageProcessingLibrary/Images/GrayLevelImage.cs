@@ -62,7 +62,13 @@ namespace ImageProcessingLibrary.Images
 
         public IEnumerator GetEnumerator()
         {
-            return _imageMatrix.GetEnumerator();
+            for (int i = 0; i < M; i++)
+            {
+                for (int j = 0; j < N; j++)
+                {
+                    yield return this[j, i];
+                }
+            }
         }
     }
 }

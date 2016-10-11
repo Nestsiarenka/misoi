@@ -9,11 +9,11 @@ namespace ImageProcessingLibrary.Filters.PointFilters
         {
             var exitGrayLevelImage = new GrayLevelImage(grayLevelImage.N, grayLevelImage.M);
 
-            for (int i = 0; i < grayLevelImage.N; i++)
+            for (int i = 0; i < grayLevelImage.M; i++)
             {
-                for (int j = 0; j < grayLevelImage.M; j++)
+                for (int j = 0; j < grayLevelImage.N; j++)
                 {
-                    exitGrayLevelImage[i, j] = ProcessPixel(grayLevelImage[i, j]);
+                    exitGrayLevelImage[j, i] = ProcessPixel(grayLevelImage[j, i]);
                 }
             }
 
