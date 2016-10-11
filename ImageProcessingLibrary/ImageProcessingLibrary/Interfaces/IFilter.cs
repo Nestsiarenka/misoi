@@ -1,9 +1,12 @@
-﻿using ImageProcessingLibrary.Images;
+﻿using ImageProcessingLibrary.Capacities.Interface;
+using ImageProcessingLibrary.Images;
 
 namespace ImageProcessingLibrary.Interfaces
 {
-    public interface IFilter
+    public interface IFilter<T, U>
+        where T: struct, ICapacity
+        where U: struct, ICapacity
     {
-        GrayLevelImage Filter(GrayLevelImage grayLevelImage);
+        Image<U> Filter(Image<T> image);
     }
 }

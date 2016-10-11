@@ -39,12 +39,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Capacities\Interface\ICapacity.cs" />
+    <Compile Include="Capacities\Structures\Gray.cs" />
+    <Compile Include="Capacities\Structures\RGB.cs" />
+    <Compile Include="Exceptions\CapacityException.cs" />
     <Compile Include="Exceptions\ImageException.cs" />
-    <Compile Include="Images\GrayLevelImage.cs" />
+    <Compile Include="Images\Image.cs" />
     <Compile Include="Filters\PointFilters\PointFilter.cs" />
     <Compile Include="Interfaces\IFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
