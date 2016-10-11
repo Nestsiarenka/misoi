@@ -7,7 +7,17 @@ namespace ImageProcessingLibrary.Filters.PointFilters
     {
         public GrayLevelImage Filter(GrayLevelImage grayLevelImage)
         {
-            throw new System.NotImplementedException();
+            var exitGrayLevelImage = new GrayLevelImage(grayLevelImage.N, grayLevelImage.M);
+
+            for (int i = 0; i < grayLevelImage.N; i++)
+            {
+                for (int j = 0; j < grayLevelImage.M; j++)
+                {
+                    exitGrayLevelImage[i, j] = ProcessPixel(grayLevelImage[i, j]);
+                }
+            }
+
+            return exitGrayLevelImage;
         }
 
         public abstract byte ProcessPixel(byte pixel);
