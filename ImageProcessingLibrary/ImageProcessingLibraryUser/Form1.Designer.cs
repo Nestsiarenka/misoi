@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.InputPictureBox = new System.Windows.Forms.PictureBox();
             this.OutputPictureBox = new System.Windows.Forms.PictureBox();
             this.InputHistogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -67,28 +67,30 @@
             // 
             // InputHistogram
             // 
-            chartArea3.Name = "ChartArea1";
-            this.InputHistogram.ChartAreas.Add(chartArea3);
+            chartArea1.Name = "ChartArea1";
+            this.InputHistogram.ChartAreas.Add(chartArea1);
             this.InputHistogram.Location = new System.Drawing.Point(491, 26);
             this.InputHistogram.Name = "InputHistogram";
             this.InputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent;
-            series3.ChartArea = "ChartArea1";
-            series3.Name = "Histogram";
-            this.InputHistogram.Series.Add(series3);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series1.Name = "Histogram";
+            this.InputHistogram.Series.Add(series1);
             this.InputHistogram.Size = new System.Drawing.Size(436, 361);
             this.InputHistogram.TabIndex = 2;
             this.InputHistogram.Text = "Histogram of input image";
             // 
             // OutputHistogram
             // 
-            chartArea4.Name = "ChartArea1";
-            this.OutputHistogram.ChartAreas.Add(chartArea4);
+            chartArea2.Name = "ChartArea1";
+            this.OutputHistogram.ChartAreas.Add(chartArea2);
             this.OutputHistogram.Location = new System.Drawing.Point(491, 419);
             this.OutputHistogram.Name = "OutputHistogram";
             this.OutputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SeaGreen;
-            series4.ChartArea = "ChartArea1";
-            series4.Name = "Histogram";
-            this.OutputHistogram.Series.Add(series4);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series2.Name = "Histogram";
+            this.OutputHistogram.Series.Add(series2);
             this.OutputHistogram.Size = new System.Drawing.Size(436, 361);
             this.OutputHistogram.TabIndex = 3;
             this.OutputHistogram.Text = "Histogram of output image";
@@ -113,6 +115,7 @@
             this.ProcessButton.TabIndex = 5;
             this.ProcessButton.Text = "Process filter";
             this.ProcessButton.UseVisualStyleBackColor = true;
+            this.ProcessButton.Click += new System.EventHandler(this.ProcessButton_Click);
             // 
             // FiltersComboBox
             // 

@@ -61,7 +61,7 @@ namespace ImageProcessingLibraryUser.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png, *.tif) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png, *.tif.
+        ///   Looks up a localized string similar to Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png, *.tif) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png; *.tif.
         /// </summary>
         internal static string FileFormatsForDialog {
             get {

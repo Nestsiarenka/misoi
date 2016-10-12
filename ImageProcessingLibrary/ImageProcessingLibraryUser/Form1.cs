@@ -3,11 +3,14 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using ImageProcessingLibrary.Capacities.Structures;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Images;
+using ImageProcessingLibrary.Interfaces;
 using ImageProcessingLibrary.Utilities;
 using ImageProcessingLibraryUser.Properties;
+
 
 namespace ImageProcessingLibraryUser
 {
@@ -28,6 +31,8 @@ namespace ImageProcessingLibraryUser
         private void Form1_Load(object sender, EventArgs e)
         {
             LoadPictureDialogInitialization();
+            HistogramChartsIntialization(InputHistogram);
+            HistogramChartsIntialization(OutputHistogram);
         }
 
         private void LoadFileButton_Click(object sender, EventArgs e)
@@ -42,13 +47,31 @@ namespace ImageProcessingLibraryUser
                 _inputImageGrayLevel = grayFilter.Filter(_inputImage);
 
                 _inputBitmap = Converter.ToBitmap(_inputImageGrayLevel);
-                //_inputBitmap = Converter.ToBitmap(_inputImage).Clone(new Rectangle(0, 0, _inputImage.N, _inputImage.M), PixelFormat.Format8bppIndexed);
+
+                DrawHistagram(new Histogram(_inputImageGrayLevel), InputHistogram);
 
                 InputPictureBox.Image?.Dispose();
                 InputPictureBox.Image = _inputBitmap;
 
                 InputPictureBox.Refresh();
             }
+        }
+
+        private void DrawHistagram(Histogram histogram, Chart histogramChart)
+        {
+            histogramChart.Series[0].Points.Clear();
+
+            for (int i = 0; i < 256; i++)
+            {
+                histogramChart.Series[0].Points.AddXY(i, histogram[i]);
+            }
+        }
+
+        private void HistogramChartsIntialization(Chart chart)
+        {
+            chart.ChartAreas[0].AxisX.IsStartedFromZero = true;
+            chart.ChartAreas[0].AxisX.Crossing = 0;
+            chart.ChartAreas[0].AxisX.Minimum = 0;
         }
 
         private void LoadPictureDialogInitialization()
@@ -68,6 +91,15 @@ namespace ImageProcessingLibraryUser
         {
             return !string.IsNullOrEmpty(fileName) && Resources.FileFormatsForValidation.Contains(Path.GetExtension(fileName)); 
         }
-        
+
+        private void ProcessButton_Click(object sender, EventArgs e)
+        {
+            IFilter<Gray, Gray> filter;
+
+            switch (FiltersComboBox.)
+            {
+                default:
+            }
+        }
     }
 }

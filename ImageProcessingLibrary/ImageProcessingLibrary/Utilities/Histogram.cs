@@ -11,8 +11,8 @@ namespace ImageProcessingLibrary.Utilities
     {
         public int Count { get; }
 
-        private readonly byte[] _hystogramMatrix = new byte[256];
-        public byte this[int i] => _hystogramMatrix[i];
+        private readonly int[] _hystogramMatrix = new int[256];
+        public int this[int i] => _hystogramMatrix[i];
 
         public byte AOD { get; }
         public int FirstNonZero { get; }
@@ -22,9 +22,12 @@ namespace ImageProcessingLibrary.Utilities
         {
             Count = image.N * image.M;
 
+            int counter = 1;
+
             foreach (Gray pixel in image)
             {
                 _hystogramMatrix[(int)pixel.G]++;
+                counter++;
             }
 
             double stagingAOD = 0;
