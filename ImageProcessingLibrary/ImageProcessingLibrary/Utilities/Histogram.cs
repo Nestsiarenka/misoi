@@ -9,7 +9,7 @@ namespace ImageProcessingLibrary.Utilities
 {
     public class Histogram : IEnumerable
     {
-        public int Count { get; }
+        private int Count { get; }
 
         private readonly int[] _histogramMatrix = new int[256];
         public int this[int i] => _histogramMatrix[i];
