@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using ImageProcessingLibrary.Capacities.Structures;
@@ -41,9 +42,11 @@ namespace ImageProcessingLibraryUser
                 _inputImageGrayLevel = grayFilter.Filter(_inputImage);
 
                 _inputBitmap = Converter.ToBitmap(_inputImageGrayLevel);
+                //_inputBitmap = Converter.ToBitmap(_inputImage).Clone(new Rectangle(0, 0, _inputImage.N, _inputImage.M), PixelFormat.Format8bppIndexed);
 
                 InputPictureBox.Image?.Dispose();
                 InputPictureBox.Image = _inputBitmap;
+
                 InputPictureBox.Refresh();
             }
         }
