@@ -44,7 +44,7 @@
     <Compile Include="Capacities\Structures\Gray.cs" />
     <Compile Include="Capacities\Structures\RGB.cs" />
     <Compile Include="Exceptions\CapacityException.cs" />
-    <Compile Include="Exceptions\ConvertorException.cs" />
+    <Compile Include="Exceptions\ConverterException.cs" />
     <Compile Include="Exceptions\ImageException.cs" />
     <Compile Include="Filters\PointFilters\FSHS.cs" />
     <Compile Include="Filters\PointFilters\RGBtoGrayFilter.cs" />
