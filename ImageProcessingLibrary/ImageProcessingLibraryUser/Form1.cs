@@ -31,6 +31,7 @@ namespace ImageProcessingLibraryUser
         private void Form1_Load(object sender, EventArgs e)
         {
             LoadPictureDialogInitialization();
+            ComboBoxInitialization();
             HistogramChartsIntialization(InputHistogram);
             HistogramChartsIntialization(OutputHistogram);
         }
@@ -46,15 +47,20 @@ namespace ImageProcessingLibraryUser
                 var grayFilter = new RGBtoGrayFilter();
                 _inputImageGrayLevel = grayFilter.Filter(_inputImage);
 
-                _inputBitmap = Converter.ToBitmap(_inputImageGrayLevel);
-
                 DrawHistagram(new Histogram(_inputImageGrayLevel), InputHistogram);
 
-                InputPictureBox.Image?.Dispose();
-                InputPictureBox.Image = _inputBitmap;
-
-                InputPictureBox.Refresh();
+                DrawImage(_inputImageGrayLevel, InputPictureBox);
             }
+        }
+
+        private void DrawImage(Image<Gray> image, PictureBox pictureBox)
+        {
+            var bitmap = Converter.ToBitmap(image);
+
+            pictureBox.Image?.Dispose();
+            pictureBox.Image = bitmap;
+
+            pictureBox.Refresh();
         }
 
         private void DrawHistagram(Histogram histogram, Chart histogramChart)
@@ -72,6 +78,14 @@ namespace ImageProcessingLibraryUser
             chart.ChartAreas[0].AxisX.IsStartedFromZero = true;
             chart.ChartAreas[0].AxisX.Crossing = 0;
             chart.ChartAreas[0].AxisX.Minimum = 0;
+        }
+
+        private void ComboBoxInitialization()
+        {
+            FiltersComboBox.Items.Insert(0, "FSHS");
+            FiltersComboBox.Items.Insert(1, "Log + FSHS");
+
+            FiltersComboBox.SelectedIndex = 0;
         }
 
         private void LoadPictureDialogInitialization()
@@ -96,10 +110,24 @@ namespace ImageProcessingLibraryUser
         {
             IFilter<Gray, Gray> filter;
 
-            switch (FiltersComboBox.)
+            switch (FiltersComboBox.SelectedIndex)
             {
+                case 0:
+                    filter = new FSHS();
+                    break;
+                case 1:
+                    filter = new LogarithmOperation();
+                    break;
+                case 2:
+
                 default:
+                    return;
             }
+
+            _outputImageGrayLevel = filter.Filter(_inputImageGrayLevel);
+
+            DrawHistagram(new Histogram(_outputImageGrayLevel), OutputHistogram);
+            DrawImage(_outputImageGrayLevel, OutputPictureBox);
         }
     }
 }

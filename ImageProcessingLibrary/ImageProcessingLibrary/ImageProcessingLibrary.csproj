@@ -47,6 +47,8 @@
     <Compile Include="Exceptions\ConverterException.cs" />
     <Compile Include="Exceptions\ImageException.cs" />
     <Compile Include="Filters\PointFilters\FSHS.cs" />
+    <Compile Include="Filters\PointFilters\HistogramBasedFilters.cs" />
+    <Compile Include="Filters\PointFilters\LogarithmOperation.cs" />
     <Compile Include="Filters\PointFilters\RGBtoGrayFilter.cs" />
     <Compile Include="Images\Image.cs" />
     <Compile Include="Filters\PointFilters\PointFilter.cs" />

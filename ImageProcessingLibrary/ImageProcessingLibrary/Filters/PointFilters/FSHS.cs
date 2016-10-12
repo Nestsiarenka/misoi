@@ -9,16 +9,8 @@ using ImageProcessingLibrary.Utilities;
 
 namespace ImageProcessingLibrary.Filters.PointFilters
 {
-    public class FSHS : PointFilter<Gray, Gray>
+    public class FSHS : HistogramBasedFilters<Gray>
     {
-        private Histogram _histogram;
-
-        public override Image<Gray> Filter(Image<Gray> image)
-        {
-            _histogram = new Histogram(image);
-            return base.Filter(image);
-        }
-
         protected override Gray ProcessPixel(Gray pixel)
         {
             double stagingG = (255.0/(_histogram.LastNonZero - _histogram.FirstNonZero))*

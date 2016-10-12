@@ -11,12 +11,13 @@ namespace ImageProcessingLibrary.Utilities
     {
         public int Count { get; }
 
-        private readonly int[] _hystogramMatrix = new int[256];
-        public int this[int i] => _hystogramMatrix[i];
+        private readonly int[] _histogramMatrix = new int[256];
+        public int this[int i] => _histogramMatrix[i];
 
         public byte AOD { get; }
         public int FirstNonZero { get; }
         public int LastNonZero { get; }
+        public int MaxMagnitude { get; }
 
         public Histogram(Image<Gray> image)
         {
@@ -26,21 +27,24 @@ namespace ImageProcessingLibrary.Utilities
 
             foreach (Gray pixel in image)
             {
-                _hystogramMatrix[(int)pixel.G]++;
+                _histogramMatrix[(int)pixel.G]++;
                 counter++;
             }
 
-            double stagingAOD = 0;
-            stagingAOD = (double)_hystogramMatrix.Select((v, i) => new {v, i}).Sum(x => x.v * x.i)/Count;
+            double stagingAOD;
+            stagingAOD = (double)_histogramMatrix.Select((v, i) => new {v, i}).Sum(x => x.v * x.i)/Count;
             AOD = Convert.ToByte(stagingAOD);
 
-            FirstNonZero = Array.FindIndex(_hystogramMatrix, v => v > 0);
-            LastNonZero = Array.FindLastIndex(_hystogramMatrix, v => v > 0);
+            FirstNonZero = Array.FindIndex(_histogramMatrix, v => v > 0);
+            LastNonZero = Array.FindLastIndex(_histogramMatrix, v => v > 0);
+
+            var maxValue = _histogramMatrix.Max();
+            MaxMagnitude = Array.FindIndex(_histogramMatrix, v => v == maxValue);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _hystogramMatrix.GetEnumerator();
+            return _histogramMatrix.GetEnumerator();
         }
     }
 }

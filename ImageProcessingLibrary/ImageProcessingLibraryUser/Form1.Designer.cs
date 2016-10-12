@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.InputPictureBox = new System.Windows.Forms.PictureBox();
             this.OutputPictureBox = new System.Windows.Forms.PictureBox();
             this.InputHistogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -67,30 +67,30 @@
             // 
             // InputHistogram
             // 
-            chartArea1.Name = "ChartArea1";
-            this.InputHistogram.ChartAreas.Add(chartArea1);
+            chartArea7.Name = "ChartArea1";
+            this.InputHistogram.ChartAreas.Add(chartArea7);
             this.InputHistogram.Location = new System.Drawing.Point(491, 26);
             this.InputHistogram.Name = "InputHistogram";
             this.InputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
-            series1.Name = "Histogram";
-            this.InputHistogram.Series.Add(series1);
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series7.Name = "Histogram";
+            this.InputHistogram.Series.Add(series7);
             this.InputHistogram.Size = new System.Drawing.Size(436, 361);
             this.InputHistogram.TabIndex = 2;
             this.InputHistogram.Text = "Histogram of input image";
             // 
             // OutputHistogram
             // 
-            chartArea2.Name = "ChartArea1";
-            this.OutputHistogram.ChartAreas.Add(chartArea2);
+            chartArea8.Name = "ChartArea1";
+            this.OutputHistogram.ChartAreas.Add(chartArea8);
             this.OutputHistogram.Location = new System.Drawing.Point(491, 419);
             this.OutputHistogram.Name = "OutputHistogram";
             this.OutputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SeaGreen;
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
-            series2.Name = "Histogram";
-            this.OutputHistogram.Series.Add(series2);
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series8.Name = "Histogram";
+            this.OutputHistogram.Series.Add(series8);
             this.OutputHistogram.Size = new System.Drawing.Size(436, 361);
             this.OutputHistogram.TabIndex = 3;
             this.OutputHistogram.Text = "Histogram of output image";
@@ -119,6 +119,7 @@
             // 
             // FiltersComboBox
             // 
+            this.FiltersComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.FiltersComboBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FiltersComboBox.FormattingEnabled = true;
             this.FiltersComboBox.Location = new System.Drawing.Point(940, 286);
