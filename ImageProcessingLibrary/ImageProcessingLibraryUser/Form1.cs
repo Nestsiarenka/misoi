@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using ImageProcessingLibrary.Capacities.Structures;
 using ImageProcessingLibrary.Filters.PointFilters;
+using ImageProcessingLibrary.Filters.SpatialFilters;
 using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Interfaces;
 using ImageProcessingLibrary.Utilities;
@@ -84,6 +84,7 @@ namespace ImageProcessingLibraryUser
         {
             FiltersComboBox.Items.Insert(0, "FSHS");
             FiltersComboBox.Items.Insert(1, "Log + FSHS");
+            FiltersComboBox.Items.Insert(2, "Gaussian");
 
             FiltersComboBox.SelectedIndex = 0;
         }
@@ -108,6 +109,11 @@ namespace ImageProcessingLibraryUser
 
         private void ProcessButton_Click(object sender, EventArgs e)
         {
+            if (_inputImageGrayLevel == null)
+            {
+                return;
+            }
+
             IFilter<Gray, Gray> filter;
 
             switch (FiltersComboBox.SelectedIndex)
@@ -119,7 +125,8 @@ namespace ImageProcessingLibraryUser
                     filter = new LogarithmOperation();
                     break;
                 case 2:
-
+                    filter = new GaussianFilter();
+                    break;
                 default:
                     return;
             }

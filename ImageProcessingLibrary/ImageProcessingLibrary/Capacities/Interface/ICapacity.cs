@@ -4,5 +4,6 @@
     {
         bool IsEmpty();
         void Initialize(object value);
+        void SetZero();
     }
 }

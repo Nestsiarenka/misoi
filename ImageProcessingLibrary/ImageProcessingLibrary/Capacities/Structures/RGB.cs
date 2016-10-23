@@ -41,5 +41,10 @@ namespace ImageProcessingLibrary.Capacities.Structures
                 throw new CapacityException("Error in RGB initialization, byte[3] value is expected", e);
             }
         }
+
+        public void SetZero()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

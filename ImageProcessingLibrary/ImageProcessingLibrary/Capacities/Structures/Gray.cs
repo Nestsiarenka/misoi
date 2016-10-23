@@ -25,6 +25,11 @@ namespace ImageProcessingLibrary.Capacities.Structures
             }
         }
 
+        public void SetZero()
+        {
+            G = 0;
+        }
+
         public bool IsEmpty()
         {
             return G == null;

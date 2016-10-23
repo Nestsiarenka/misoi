@@ -10,16 +10,29 @@ namespace ImageProcessingLibrary.Images
     where T : struct, ICapacity
     {
         private readonly T[][] _imageMatrix;
+        
 
         public T this[int i, int j]
         {
-            get { return _imageMatrix[j][i]; }
+            get
+            {
+                if (ReturnZeroIfOutOfBounds && (j < 0 || j >= M || i < 0 || i >= N))
+                {
+                    T zeroValue = new T();
+
+                    zeroValue.SetZero();
+                    return zeroValue;
+                }
+
+                return _imageMatrix[j][i];
+            }
             set { _imageMatrix[j][i] = value; }
         }
 
         public int Count => N * M;
         public int N { get; }
         public int M { get; }
+        public bool ReturnZeroIfOutOfBounds { get; set; }
 
         public Image(int n, int m)
         {
@@ -59,6 +72,7 @@ namespace ImageProcessingLibrary.Images
                     return i;
                 }
             }
+
             throw new ImageException("No zero lines in image");
         }
 
