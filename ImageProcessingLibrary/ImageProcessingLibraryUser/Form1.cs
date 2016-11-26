@@ -46,10 +46,13 @@ namespace ImageProcessingLibraryUser
 
                 var grayFilter = new RGBtoGrayFilter();
                 _inputImageGrayLevel = grayFilter.Filter(_inputImage);
+                _outputImageGrayLevel = _inputImageGrayLevel.Clone();
 
                 DrawHistagram(new Histogram(_inputImageGrayLevel), InputHistogram);
+                DrawHistagram(new Histogram(_outputImageGrayLevel), OutputHistogram);
 
                 DrawImage(_inputImageGrayLevel, InputPictureBox);
+                DrawImage(_inputImageGrayLevel, OutputPictureBox);
             }
         }
 
@@ -85,6 +88,7 @@ namespace ImageProcessingLibraryUser
             FiltersComboBox.Items.Insert(0, "FSHS");
             FiltersComboBox.Items.Insert(1, "Log + FSHS");
             FiltersComboBox.Items.Insert(2, "Gaussian");
+            FiltersComboBox.Items.Insert(3, "Median");
 
             FiltersComboBox.SelectedIndex = 0;
         }
@@ -109,7 +113,7 @@ namespace ImageProcessingLibraryUser
 
         private void ProcessButton_Click(object sender, EventArgs e)
         {
-            if (_inputImageGrayLevel == null)
+            if (_outputImageGrayLevel == null)
             {
                 return;
             }
@@ -127,11 +131,22 @@ namespace ImageProcessingLibraryUser
                 case 2:
                     filter = new GaussianFilter();
                     break;
+                case 3:
+                    filter = new MedianFilter(new bool[3,3]);
+                    break;
                 default:
                     return;
             }
 
-            _outputImageGrayLevel = filter.Filter(_inputImageGrayLevel);
+            _outputImageGrayLevel = filter.Filter(_outputImageGrayLevel);
+
+            DrawHistagram(new Histogram(_outputImageGrayLevel), OutputHistogram);
+            DrawImage(_outputImageGrayLevel, OutputPictureBox);
+        }
+
+        private void UndoAll_Click(object sender, EventArgs e)
+        {
+            _outputImageGrayLevel = _inputImageGrayLevel.Clone();
 
             DrawHistagram(new Histogram(_outputImageGrayLevel), OutputHistogram);
             DrawImage(_outputImageGrayLevel, OutputPictureBox);

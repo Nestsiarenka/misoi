@@ -33,6 +33,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup />
   <ItemGroup>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
@@ -51,6 +52,7 @@
     <Compile Include="Capacities\Interface\ICapacity.cs" />
     <Compile Include="Capacities\Structures\Gray.cs" />
     <Compile Include="Capacities\Structures\RGB.cs" />
+    <Compile Include="Detection\HOG\HogClassifier.cs" />
     <Compile Include="Exceptions\CapacityException.cs" />
     <Compile Include="Exceptions\ConverterException.cs" />
     <Compile Include="Exceptions\ImageException.cs" />
@@ -60,12 +62,14 @@
     <Compile Include="Filters\PointFilters\RGBtoGrayFilter.cs" />
     <Compile Include="Filters\SpatialFilters\ConvolutionFilter.cs" />
     <Compile Include="Filters\SpatialFilters\GaussianFilter.cs" />
+    <Compile Include="Filters\SpatialFilters\MedianFilter.cs" />
     <Compile Include="Filters\SpatialFilters\SpatialFilter.cs" />
     <Compile Include="Images\Image.cs" />
     <Compile Include="Filters\PointFilters\PointFilter.cs" />
     <Compile Include="Interfaces\IFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\Converter.cs" />
+    <Compile Include="Utilities\Enums\Channel.cs" />
     <Compile Include="Utilities\FileLoader.cs" />
     <Compile Include="Utilities\Histogram.cs" />
   </ItemGroup>

@@ -1,9 +1,12 @@
-﻿using System.Drawing;
+﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using ImageProcessingLibrary.Capacities.Interface;
 using ImageProcessingLibrary.Capacities.Structures;
+using ImageProcessingLibrary.Exceptions;
 using ImageProcessingLibrary.Images;
+using ImageProcessingLibrary.Utilities.Enums;
 
 namespace ImageProcessingLibrary.Utilities
 {
@@ -83,6 +86,84 @@ namespace ImageProcessingLibrary.Utilities
             bitmap.Palette = pal;
 
             return bitmap;
+        }
+
+        public static List<Image<Gray>> SeparateRgbImageToChannels(Image<RGB> image)
+        {
+            if (image == null)
+            {
+                throw new ConverterException("The image must be not null");
+            }
+
+            var channelsRgb = new List<Image<Gray>>
+            {
+                ChannelToGrayImage(image, Channel.R),
+                ChannelToGrayImage(image, Channel.G),
+                ChannelToGrayImage(image, Channel.B)
+            };
+
+
+            return channelsRgb;
+        }
+
+        public static Image<RGB> ChannelsToRgb(Image<Gray> red, Image<Gray> green, Image<Gray> blue)
+        {
+            if (red == null || green == null || blue == null ||
+                red.M != green.M || red.M != blue.M || 
+                red.N != green.N || red.N != blue.N
+                )
+            {
+                throw new ConverterException("The channels must be not null and have equal dimensions");
+            }
+
+            var imageRgb = new Image<RGB>(red.N, red.M);
+
+            for (int i = 0; i < red.N; i++)
+            {
+                for (int j = 0; j < red.M; j++)
+                {
+                    imageRgb[i, j] = new RGB(red[i,j].G, green[i,j].G, blue[i,j].G);
+                }
+            }
+
+            return imageRgb;
+        }
+
+        public static Image<Gray> ChannelToGrayImage(Image<RGB> image, Channel channel)
+        {
+            if (image == null)
+            {
+                throw new ConverterException("The image must be not null");
+            }
+
+            var imageGray = new Image<Gray>(image.M, image.N);
+
+            for (int i = 0; i < image.N; i++)
+            {
+                for (int j = 0; j < image.M; j++)
+                {
+                    Gray pixel;
+                    switch (channel)
+                    {
+                        case Channel.R:
+                            pixel = new Gray(image[i, j].R);
+                            break;
+                        case Channel.G:
+                            pixel = new Gray(image[i, j].G);
+                            break;
+                        case Channel.B:
+                            pixel = new Gray(image[i, j].B);
+                            break;
+                        default:
+                            pixel = new Gray();
+                            break;
+                    }
+
+                    imageGray[i, j] = pixel;
+                }
+            }
+
+            return imageGray;
         }
     }
 }

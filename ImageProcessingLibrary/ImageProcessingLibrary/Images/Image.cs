@@ -47,6 +47,14 @@ namespace ImageProcessingLibrary.Images
             M = m;
         }
 
+        private Image(T[][] imageMatrix, int n, int m)
+        {
+            _imageMatrix = imageMatrix;
+
+            N = n;
+            M = m;
+        }
+
         public void Add(params object[] values)
         {
             if (values.Length == N)
@@ -90,6 +98,13 @@ namespace ImageProcessingLibrary.Images
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        public Image<T> Clone()
+        {
+            var clonedImage = new Image<T>((T[][])_imageMatrix.Clone(), N, M);
+
+            return clonedImage;
         }
     }
 }

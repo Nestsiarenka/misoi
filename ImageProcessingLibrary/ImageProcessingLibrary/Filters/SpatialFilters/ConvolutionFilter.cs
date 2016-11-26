@@ -21,6 +21,11 @@ namespace ImageProcessingLibrary.Filters.SpatialFilters
 
         public ConvolutionFilter(int[,] convolutionMatrix)
         {
+            if (convolutionMatrix == null)
+            {
+                throw new InvalidFilterCriteriaException("The convolution matrix must be not null");
+            }
+
             _convolutionMatrix = convolutionMatrix;
 
             _kernelHeight = _convolutionMatrix.GetLength(0);

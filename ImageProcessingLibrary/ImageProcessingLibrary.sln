@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcessingLibrary", "I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageProcessingLibraryUser", "ImageProcessingLibraryUser\ImageProcessingLibraryUser.csproj", "{74D94B8A-59E7-4470-9D32-4F5D4A874502}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole", "TestConsole\TestConsole.csproj", "{02EB3282-6509-4FF5-BD95-CA64BB9227F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{74D94B8A-59E7-4470-9D32-4F5D4A874502}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74D94B8A-59E7-4470-9D32-4F5D4A874502}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74D94B8A-59E7-4470-9D32-4F5D4A874502}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02EB3282-6509-4FF5-BD95-CA64BB9227F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02EB3282-6509-4FF5-BD95-CA64BB9227F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02EB3282-6509-4FF5-BD95-CA64BB9227F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02EB3282-6509-4FF5-BD95-CA64BB9227F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
