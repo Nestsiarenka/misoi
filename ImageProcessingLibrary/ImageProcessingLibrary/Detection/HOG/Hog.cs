@@ -6,7 +6,7 @@ using ImageProcessingLibrary.Images;
 
 namespace ImageProcessingLibrary.Detection.HOG
 {
-    public class HogClassifier
+    public class Hog
     {
         private readonly Image<Gray> _image;
         private readonly int _windowWidth;
@@ -27,7 +27,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             };
 
 
-        public HogClassifier(Image<Gray> image, int windowWidth, int windowHeight)
+        public Hog(Image<Gray> image, int windowWidth, int windowHeight)
         {
             _image = image;
             _windowHeight = windowHeight;

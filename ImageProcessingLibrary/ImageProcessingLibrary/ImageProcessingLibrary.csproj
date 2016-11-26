@@ -52,7 +52,13 @@
     <Compile Include="Capacities\Interface\ICapacity.cs" />
     <Compile Include="Capacities\Structures\Gray.cs" />
     <Compile Include="Capacities\Structures\RGB.cs" />
-    <Compile Include="Detection\HOG\HogClassifier.cs" />
+    <Compile Include="Classifiers\SVM\SvmClassifier.cs" />
+    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\ISVMTrainer.cs" />
+    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\SMO\SMO.cs" />
+    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\SMO\SMOTrainingData.cs" />
+    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\TrainingData.cs" />
+    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\TrainingResult.cs" />
+    <Compile Include="Detection\HOG\Hog.cs" />
     <Compile Include="Exceptions\CapacityException.cs" />
     <Compile Include="Exceptions\ConverterException.cs" />
     <Compile Include="Exceptions\ImageException.cs" />
@@ -76,6 +82,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

@@ -26,7 +26,7 @@ namespace TestConsole
                 {42, 67, 39, 54, 99},
                 {44, 87, 65, 63, 120}
             };
-            var classifier = new HogClassifier(image, 64, 128);
+            var classifier = new Hog(image, 64, 128);
             var watch = System.Diagnostics.Stopwatch.StartNew();
             var hogDescriptor = classifier.ComputeHogDescriptor(1, 1);
             watch.Stop();
