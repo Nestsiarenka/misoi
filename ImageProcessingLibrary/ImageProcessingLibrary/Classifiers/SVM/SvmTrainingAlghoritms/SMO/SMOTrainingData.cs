@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ImageProcessingLibrary.Classifiers.SVM.Kernels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +14,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         public double C { get; set;}
         public double Tolerance { get; set; }
 
-        public SmoTrainingData (double[][] examples, double[] examplesClasses, double c, double tolerance)
+        public SmoTrainingData (double[][] examples, double[] examplesClasses, double c, double tolerance, IKernel kernel) : base(kernel)
         {
             Examples = examples;
             C = c;

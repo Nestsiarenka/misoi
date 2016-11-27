@@ -8,7 +8,7 @@ namespace ImageProcessingLibrary.Detection.HOG
 {
     public class Hog
     {
-        private readonly Image<Gray> _image;
+        //private readonly Image<Gray> _image;
         private readonly int _windowWidth;
         private readonly int _windowHeight;
         private const int CellSize = 8;
@@ -26,10 +26,8 @@ namespace ImageProcessingLibrary.Detection.HOG
                 0, 10, 30, 50, 70, 90, 110, 130, 150, 170, 180
             };
 
-
-        public Hog(Image<Gray> image, int windowWidth, int windowHeight)
+        public Hog(int windowWidth, int windowHeight)
         {
-            _image = image;
             _windowHeight = windowHeight;
             _windowWidth = windowWidth;
             _cellsCountInWindow = _windowWidth / CellSize * _windowHeight / CellSize;
@@ -38,9 +36,9 @@ namespace ImageProcessingLibrary.Detection.HOG
             _sizeOfHogFeature = 4 * 9 * _blocksInRow * _blocksInColumn;
         }
 
-        public double[] ComputeHogDescriptor(int windowx, int windowy)
+        public double[] ComputeHogDescriptor(Image<Gray> image, int windowx, int windowy)
         {
-            return ComputeBlockNormalization(ComputeAllCellsInWindow(windowx, windowy));
+            return ComputeBlockNormalization(ComputeAllCellsInWindow(image, windowx, windowy));
         }
 
         private double[] ComputeBlockNormalization(double[,][] computedCells)
@@ -102,9 +100,9 @@ namespace ImageProcessingLibrary.Detection.HOG
             return result;
         }
 
-        public double[,][] ComputeAllCellsInWindow(int windowx, int windowy)
+        public double[,][] ComputeAllCellsInWindow(Image<Gray> image, int windowx, int windowy)
         {
-            return ComputeNumberOfCels(windowx, windowy, 0, 0, _cellsCountInWindow);
+            return ComputeNumberOfCels(image, windowx, windowy, 0, 0, _cellsCountInWindow);
         }
 
         /*
@@ -161,7 +159,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             return _computedCells;
         }*/
 
-        public double[,][] ComputeNumberOfCels(
+        public double[,][] ComputeNumberOfCels(Image<Gray> image,
             int windowX, int windowY,
             int offsetByWindowX, int offsetByWindowY, int numberOfCells)
         { 
@@ -184,7 +182,7 @@ namespace ImageProcessingLibrary.Detection.HOG
                 int cellx = x/CellSize;
                 int celly = y/CellSize;
 
-                computedCells[cellx, celly] = ComputeOrientedHistogramForCell(offsetx, offsety);
+                computedCells[cellx, celly] = ComputeOrientedHistogramForCell(image, offsetx, offsety);
 
                 x += CellSize;
             }
@@ -192,7 +190,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             return computedCells;
         }
 
-        private double[] ComputeOrientedHistogramForCell(int offsetx, int offsety)
+        private double[] ComputeOrientedHistogramForCell(Image<Gray> image, int offsetx, int offsety)
         {
             var orientedHistogramTemp = new double[11];
 
@@ -205,8 +203,8 @@ namespace ImageProcessingLibrary.Detection.HOG
             {
                 for (; x < xBound; x++)
                 {
-                    var dx = Math.Abs(Convert.ToInt16(_image[x - 1, y].G - _image[x + 1, y].G));
-                    var dy = Math.Abs(Convert.ToInt16(_image[x, y - 1].G - _image[x, y + 1].G));
+                    var dx = Math.Abs(Convert.ToInt16(image[x - 1, y].G - image[x + 1, y].G));
+                    var dy = Math.Abs(Convert.ToInt16(image[x, y - 1].G - image[x, y + 1].G));
 
                     double magnitute = Math.Sqrt(dx*dx + dy*dy);
                     double angle = Math.Atan2(dy, dx)*180/Math.PI;

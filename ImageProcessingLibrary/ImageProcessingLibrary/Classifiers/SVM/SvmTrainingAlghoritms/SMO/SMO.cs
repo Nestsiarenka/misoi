@@ -92,9 +92,9 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                         return 1;
                     }
 
-                    i++;
+                    i = (i + 1) % _alphas.Length;
 
-                } while (startingPoint != i % _alphas.Length);
+                } while (i != startingPoint);
 
                 startingPoint = random.Next(_alphas.Length - 1);
                 i = startingPoint;
@@ -105,9 +105,9 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                         return 1;
                     }
 
-                    i++;
+                    i = (i + 1) % _alphas.Length;
 
-                } while (startingPoint != i % _alphas.Length);
+                } while (i != startingPoint);
             }
 
             return 0;
