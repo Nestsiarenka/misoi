@@ -1,8 +1,15 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using ImageProcessingLibrary.Classifiers.SVM;
 using ImageProcessingLibrary.Capacities.Structures;
 using ImageProcessingLibrary.Images;
+using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
+using System.IO;
+using System.Collections.Generic;
+using ImageProcessingLibrary.Utilities;
+using ImageProcessingLibrary.Filters.PointFilters;
+using ImageProcessingLibrary.Classifiers.SVM.Kernels;
 
 namespace ImageProcessingLibrary.Detection.HOG
 {
@@ -21,6 +28,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         private readonly int _sizeOfHogFeature;
         private readonly int _blocksInRow;
         private readonly int _blocksInColumn;
+        private SvmClassifier svm = new Smo();
 
         readonly double[] _bins = {
                 0, 10, 30, 50, 70, 90, 110, 130, 150, 170, 180
@@ -36,7 +44,113 @@ namespace ImageProcessingLibrary.Detection.HOG
             _sizeOfHogFeature = 4 * 9 * _blocksInRow * _blocksInColumn;
         }
 
-        public double[] ComputeHogDescriptor(Image<Gray> image, int windowx, int windowy)
+        public void TrainHog()
+        { }
+
+
+        public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
+        {
+            var trueExamplesFolderEnumeration = Directory.EnumerateFiles(trueExamplesFolderPath);
+            var falseExamplesFolderEnumeration = Directory.EnumerateFiles(falseExamplesFolderPath);
+
+            int trueFilesCount = trueExamplesFolderEnumeration.Count();
+            int falseFilesCount = falseExamplesFolderEnumeration.Count();
+
+            var examples = new double[trueFilesCount + falseFilesCount][];
+            var classes = new double[trueFilesCount + falseFilesCount];
+
+            int workersCount = 8;
+            int countFilesForWorker = 10;
+            var taskArray = new Task[workersCount];
+            int taskIndex = 0;
+            int taskCounter = 0;
+
+            for (int i = 0; i < trueFilesCount; i += countFilesForWorker)
+            {
+                taskArray[taskIndex] = Task.Factory.StartNew(
+                   obj =>
+                   {
+                       var data = (DataTrainHog)obj;
+                       TrainFromFiles(data.Examples, data.OffsetExamples, data.Enumeration, data.OffsetEnumerator,
+                           data.Count, data.ClassValue, data.Classes);
+                   }, new DataTrainHog
+                   {
+                       Examples = examples,
+                       OffsetExamples = i,
+                       Enumeration = trueExamplesFolderEnumeration,
+                       OffsetEnumerator = i,
+                       Count = (trueFilesCount - i < countFilesForWorker) ? trueFilesCount - i : countFilesForWorker,
+                       Classes = classes,
+                       ClassValue = 1
+                   });
+
+                if (taskCounter == workersCount - 1)
+                {
+                    taskIndex = Task.WaitAny(taskArray);
+                }
+                else
+                {
+                    taskCounter++;
+                    taskIndex++;
+                }
+            }
+
+            for (int i = 0; i < falseFilesCount; i += countFilesForWorker)
+            {
+                taskArray[taskIndex] = Task.Factory.StartNew(
+                   obj =>
+                   {
+                       var data = (DataTrainHog)obj;
+                       TrainFromFiles(data.Examples, data.OffsetExamples, data.Enumeration, data.OffsetEnumerator,
+                           data.Count, data.ClassValue, data.Classes);
+                   }, new DataTrainHog
+                   {
+                       Examples = examples,
+                       OffsetExamples = trueFilesCount + i,
+                       Enumeration = falseExamplesFolderEnumeration,
+                       OffsetEnumerator = i,
+                       Count = (falseFilesCount - i < countFilesForWorker) ? falseFilesCount - i : countFilesForWorker,
+                       Classes = classes,
+                       ClassValue = -1
+                   });
+
+                  taskIndex = Task.WaitAny(taskArray);
+            }
+
+            foreach (var task in taskArray)
+            {
+                task?.Wait();
+            }
+
+            var trainingData = new SmoTrainingData(examples, classes, 0.15, 0.001, new Linear());
+
+            svm.Train(trainingData);
+        }
+
+        class DataTrainHog
+        {
+            public double[][] Examples { get; set; }
+            public int OffsetExamples { get; set; }
+            public IEnumerable<string> Enumeration { get; set; }
+            public int OffsetEnumerator { get; set; }
+            public int Count { get; set; }
+            public double ClassValue { get; set; }
+            public double[] Classes { get; set; }
+        }
+
+        public void TrainFromFiles(double[][] examples, int offsetExamples, IEnumerable<string> enumeration, 
+            int offsetEnumerator, int count, double classValue, double[] classes)
+        {
+            for (int i = 0; i < count; i++)
+            {
+                var rgbToGrayFilter = new RGBtoGrayFilter();
+                var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(offsetEnumerator + i)));
+                examples[offsetExamples + i] = ComputeHogDescriptor(image, 1, 1);
+                classes[offsetExamples + i] = classValue;
+            }
+        }
+
+        private double[] ComputeHogDescriptor(Image<Gray> image, int windowx, int windowy)
         {
             return ComputeBlockNormalization(ComputeAllCellsInWindow(image, windowx, windowy));
         }

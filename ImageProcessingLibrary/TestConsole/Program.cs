@@ -30,8 +30,7 @@ namespace TestConsole
             };
             var classifier = new Hog(64, 128);
             var watch = System.Diagnostics.Stopwatch.StartNew();
-            var hogDescriptor = classifier.ComputeHogDescriptor(image, 1, 1);
-            watch.Stop();
+            classifier.TrainHog("D:\\Images\\examples\\true", "D:\\Images\\examples\\false");
             Console.WriteLine("Not async: {0}" , watch.ElapsedMilliseconds);
 
             Smo smo = new Smo();
