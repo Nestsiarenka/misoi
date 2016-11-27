@@ -52,12 +52,13 @@
     <Compile Include="Capacities\Interface\ICapacity.cs" />
     <Compile Include="Capacities\Structures\Gray.cs" />
     <Compile Include="Capacities\Structures\RGB.cs" />
+    <Compile Include="Classifiers\SVM\Kernels\Gaussian.cs" />
+    <Compile Include="Classifiers\SVM\Kernels\IKernel.cs" />
+    <Compile Include="Classifiers\SVM\Kernels\Linear.cs" />
     <Compile Include="Classifiers\SVM\SvmClassifier.cs" />
-    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\ISVMTrainer.cs" />
     <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\SMO\SMO.cs" />
     <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\SMO\SMOTrainingData.cs" />
-    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\TrainingData.cs" />
-    <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\TrainingResult.cs" />
+    <Compile Include="Classifiers\SVM\TrainingData.cs" />
     <Compile Include="Detection\HOG\Hog.cs" />
     <Compile Include="Exceptions\CapacityException.cs" />
     <Compile Include="Exceptions\ConverterException.cs" />

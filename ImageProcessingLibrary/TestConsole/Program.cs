@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ImageProcessingLibrary.Capacities.Structures;
+using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
 using ImageProcessingLibrary.Detection.HOG;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Images;
@@ -31,6 +32,13 @@ namespace TestConsole
             var hogDescriptor = classifier.ComputeHogDescriptor(1, 1);
             watch.Stop();
             Console.WriteLine("Not async: {0}" , watch.ElapsedMilliseconds);
+
+            Smo smo = new Smo();
+            double[][] examples = { new double[]{1,4}, new double[] { 1,6}, new double[] { 2,8}, new double[] { 3,6}, new double[] { 4,1}, new double[] { 6,1}, new double[] { 6,3}, new double[] { 8,2}};
+           double[] classes = {-1, -1, -1, -1, 1, 1, 1, 1};
+            double c = 0.15;
+
+            SmoTrainingData trainingData = new SmoTrainingData(examples, classes, c, 0,0001);
 
            Console.ReadLine();
        }
