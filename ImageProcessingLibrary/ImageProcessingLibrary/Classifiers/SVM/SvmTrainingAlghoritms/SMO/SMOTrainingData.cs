@@ -6,15 +6,19 @@ using System.Threading.Tasks;
 
 namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 {
-    public class SMOTrainingData : TrainingData
+    public class SmoTrainingData : TrainingData
     {
         public double[][] Examples { get; set; }
+        public double[] ExamplesClasses { get; set; }
         public double C { get; set;}
+        public double Tolerance { get; set; }
 
-        public SMOTrainingData (double[][] examples, double c)
+        public SmoTrainingData (double[][] examples, double[] examplesClasses, double c, double tolerance)
         {
             Examples = examples;
             C = c;
+            Tolerance = tolerance;
+            ExamplesClasses = examplesClasses;
         }
     }
 }
