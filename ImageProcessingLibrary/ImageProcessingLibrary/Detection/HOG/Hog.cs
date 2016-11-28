@@ -7,6 +7,7 @@ using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
 using System.IO;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Xml;
@@ -46,6 +47,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         [DataMember]
         private Smo svm = new Smo();
 
+        [DataMember]
         readonly double[] _bins =
         {
             0, 10, 30, 50, 70, 90, 110, 130, 150, 170, 180
@@ -64,10 +66,12 @@ namespace ImageProcessingLibrary.Detection.HOG
         private Hog()
         { }
 
-        public void TrainHog()
+        public bool Predict(Image<Gray> image, int windowsX, int windowsY)
         {
-        }
+            var descriptor = ComputeHogDescriptor(image, windowsX, windowsY);
 
+            return svm.Predict(descriptor) > 0;
+        }
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
         {
