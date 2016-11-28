@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 {
+    [DataContract]
     public class Smo : SvmClassifier
     {
         private double[][] _examples;
@@ -14,6 +16,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private double[] _errorCache;
         private double _c;
         private double _tolerance;
+        [IgnoreDataMember]
         Random random = new Random();
 
         private double examplesClass2;
@@ -59,6 +62,9 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private int indexA2;
         private int indexA1;
 
+        public Smo():base()
+        { }
+
         public override void Train(TrainingData data)
         {
             var trainingData = data as SmoTrainingData;
@@ -69,6 +75,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             _c = trainingData.C;
             _tolerance = trainingData.Tolerance;
             Kernel = trainingData.Kernel;
+            KernelType = Kernel.GetType().Name;
 
             Weights = new double[_examples[0].Length];
             _alphas = new double[_examples.Length];

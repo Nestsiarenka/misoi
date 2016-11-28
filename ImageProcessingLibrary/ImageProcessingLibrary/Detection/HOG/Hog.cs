@@ -7,29 +7,44 @@ using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
 using System.IO;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using System.Threading;
+using System.Xml;
+using System.Xml.Serialization;
 using ImageProcessingLibrary.Utilities;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Classifiers.SVM.Kernels;
 
 namespace ImageProcessingLibrary.Detection.HOG
 {
+    [DataContract]
     public class Hog
     {
         //private readonly Image<Gray> _image;
+        [DataMember]
         private readonly int _windowWidth;
+        [DataMember]
         private readonly int _windowHeight;
+        [DataMember]
         private const int CellSize = 8;
+        [DataMember]
         private const int BlockSize = 4;
+        [DataMember]
         private readonly int _cellsCountInWindow;
         /*
         private const int CellsForWorker = 32;
         private const int WorkersCount = 4;
         */
+
+        [DataMember]
         private readonly int _sizeOfHogFeature;
+        [DataMember]
         private readonly int _blocksInRow;
+        [DataMember]
         private readonly int _blocksInColumn;
-        private SvmClassifier svm = new Smo();
+
+        [DataMember]
+        private Smo svm = new Smo();
 
         readonly double[] _bins =
         {
@@ -45,6 +60,9 @@ namespace ImageProcessingLibrary.Detection.HOG
             _blocksInRow = _windowWidth/CellSize - 1;
             _sizeOfHogFeature = 4*9*_blocksInRow*_blocksInColumn;
         }
+
+        private Hog()
+        { }
 
         public void TrainHog()
         {
@@ -63,7 +81,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             var classes = new List<double>(trueFilesCount + falseFilesCount);
 
             int workersCount = 8;
-            int countFilesForWorker = 10;
+            int countFilesForWorker = 100;
             var taskArray = new Task[workersCount];
             int taskIndex = 0;
             int taskCounter = 0;
@@ -115,7 +133,15 @@ namespace ImageProcessingLibrary.Detection.HOG
                         ClassValue = -1
                     });
 
-                taskIndex = Task.WaitAny(taskArray);
+                if (taskCounter == workersCount - 1)
+                {
+                    taskIndex = Task.WaitAny(taskArray);
+                }
+                else
+                {
+                    taskCounter++;
+                    taskIndex++;
+                }
             }
 
             foreach (var task in taskArray)
@@ -147,10 +173,10 @@ namespace ImageProcessingLibrary.Detection.HOG
             {
                 var rgbToGrayFilter = new RGBtoGrayFilter();
                 var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(offsetEnumerator + i)));
-
-                for (int j = 1; j < image.N - _windowWidth - 1; j += _windowWidth)
+                image.ReturnZeroIfOutOfBounds = true;
+                for (int j = 0; j < image.N - _windowWidth; j += _windowWidth)
                 {
-                    for (int k = 1; k < image.M - _windowHeight - 1; k += _windowHeight)
+                    for (int k = 0; k < image.M - _windowHeight; k += _windowHeight)
                     {
                         Monitor.Enter(outputLock);
                         try
@@ -351,6 +377,31 @@ namespace ImageProcessingLibrary.Detection.HOG
             var orientedHistogram = new double[9];
             Array.Copy(orientedHistogramTemp, 1, orientedHistogram, 0, 9);
             return orientedHistogram;
+        }
+
+        public void Save(string filePath)
+        {
+            var serializer = new DataContractSerializer(typeof(Hog));
+            FileStream writer = new FileStream(filePath, FileMode.Create);
+
+            serializer.WriteObject(writer, this);
+
+            writer.Close();
+        }
+
+        public static Hog Load(string filePath)
+        {
+            Hog hog;
+
+            FileStream fs = new FileStream(filePath,
+            FileMode.Open);
+            XmlDictionaryReader reader =
+                XmlDictionaryReader.CreateTextReader(fs, new XmlDictionaryReaderQuotas());
+            DataContractSerializer ser = new DataContractSerializer(typeof(Hog));
+
+            hog = (Hog)ser.ReadObject(reader, true);
+            hog.svm.InitKernel();
+            return hog;
         }
     }
 }
