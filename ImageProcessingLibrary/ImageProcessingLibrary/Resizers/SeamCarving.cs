@@ -98,19 +98,17 @@ namespace ImageProcessingLibrary.Resizers
                 }
             }
 
+            // Теперь вычисляем все элементы массива от предпоследнего до первого.
             for (i = last - 1; i >= 0; i--)
             {
+                // prev - номер пикселя цепочки из предыдущей строки
+                // В этой строке пикселями цепочки могут быть только (prev-1), prev или (prev+1), поскольку цепочка должна быть связанной
                 int prev = res[i + 1];
 
+                // Здесь мы ищем, в каком элементе массива sum, из тех, которые мы можем удалить, записано минимальное значение и присваиваем результат переменной res[i]
                 res[i] = prev;
-                if (prev > 0 && sum[i, res[i]] > sum[i, prev - 1])
-                {
-                    res[i] = prev - 1;
-                }
-                if (prev < _image.N - 1 && sum[i, res[i]] > sum[i, prev + 1])
-                {
-                    res[i] = prev + 1;
-                }
+                if (prev > 0 && sum[i, res[i]] > sum[i, prev - 1]) res[i] = prev - 1;
+                if (prev < _image.N - 1 && sum[i, res[i]] > sum[i, prev + 1]) res[i] = prev + 1;
             }
 
             return res;
