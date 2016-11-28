@@ -9,8 +9,10 @@ namespace ImageProcessingLibrary.Utilities
     {
         public static Image<RGB> LoadFromFile(String pathToFile)
         {
-            var bitmap = new Bitmap(pathToFile);
-            return Converter.ToImage(bitmap);
+            using (var bitmap = new Bitmap(pathToFile))
+            {
+                return Converter.ToImage(bitmap);
+            }                
         }
     }
 }

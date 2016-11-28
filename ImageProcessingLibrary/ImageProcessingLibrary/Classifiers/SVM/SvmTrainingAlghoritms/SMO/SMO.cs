@@ -29,7 +29,12 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             _errorCache = new double[_examples.Length];
 
             Training();
-        }
+
+            _examples = null;
+            _examplesClasses = null;
+            _alphas = null;
+            _errorCache = null;
+    }
 
         private void Training()
         {
