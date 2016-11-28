@@ -7,6 +7,7 @@ using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
 using System.IO;
 using System.Collections.Generic;
+using System.Threading;
 using ImageProcessingLibrary.Utilities;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Classifiers.SVM.Kernels;
@@ -30,22 +31,24 @@ namespace ImageProcessingLibrary.Detection.HOG
         private readonly int _blocksInColumn;
         private SvmClassifier svm = new Smo();
 
-        readonly double[] _bins = {
-                0, 10, 30, 50, 70, 90, 110, 130, 150, 170, 180
-            };
+        readonly double[] _bins =
+        {
+            0, 10, 30, 50, 70, 90, 110, 130, 150, 170, 180
+        };
 
         public Hog(int windowWidth, int windowHeight)
         {
             _windowHeight = windowHeight;
             _windowWidth = windowWidth;
-            _cellsCountInWindow = _windowWidth / CellSize * _windowHeight / CellSize;
+            _cellsCountInWindow = _windowWidth/CellSize*_windowHeight/CellSize;
             _blocksInColumn = _windowHeight/CellSize - 1;
             _blocksInRow = _windowWidth/CellSize - 1;
-            _sizeOfHogFeature = 4 * 9 * _blocksInRow * _blocksInColumn;
+            _sizeOfHogFeature = 4*9*_blocksInRow*_blocksInColumn;
         }
 
         public void TrainHog()
-        { }
+        {
+        }
 
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
@@ -56,8 +59,8 @@ namespace ImageProcessingLibrary.Detection.HOG
             int trueFilesCount = trueExamplesFolderEnumeration.Count();
             int falseFilesCount = falseExamplesFolderEnumeration.Count();
 
-            var examples = new double[trueFilesCount + falseFilesCount][];
-            var classes = new double[trueFilesCount + falseFilesCount];
+            var examples = new List<double[]>(trueFilesCount + falseFilesCount);
+            var classes = new List<double>(trueFilesCount + falseFilesCount);
 
             int workersCount = 8;
             int countFilesForWorker = 10;
@@ -68,21 +71,20 @@ namespace ImageProcessingLibrary.Detection.HOG
             for (int i = 0; i < trueFilesCount; i += countFilesForWorker)
             {
                 taskArray[taskIndex] = Task.Factory.StartNew(
-                   obj =>
-                   {
-                       var data = (DataTrainHog)obj;
-                       TrainFromFiles(data.Examples, data.OffsetExamples, data.Enumeration, data.OffsetEnumerator,
-                           data.Count, data.ClassValue, data.Classes);
-                   }, new DataTrainHog
-                   {
-                       Examples = examples,
-                       OffsetExamples = i,
-                       Enumeration = trueExamplesFolderEnumeration,
-                       OffsetEnumerator = i,
-                       Count = (trueFilesCount - i < countFilesForWorker) ? trueFilesCount - i : countFilesForWorker,
-                       Classes = classes,
-                       ClassValue = 1
-                   });
+                    obj =>
+                    {
+                        var data = (DataTrainHog) obj;
+                        TrainFromFiles(data.Examples, data.Enumeration, data.OffsetEnumerator,
+                            data.Count, data.ClassValue, data.Classes);
+                    }, new DataTrainHog
+                    {
+                        Examples = examples,
+                        Enumeration = trueExamplesFolderEnumeration,
+                        OffsetEnumerator = i,
+                        Count = (trueFilesCount - i < countFilesForWorker) ? trueFilesCount - i : countFilesForWorker,
+                        Classes = classes,
+                        ClassValue = 1
+                    });
 
                 if (taskCounter == workersCount - 1)
                 {
@@ -98,23 +100,22 @@ namespace ImageProcessingLibrary.Detection.HOG
             for (int i = 0; i < falseFilesCount; i += countFilesForWorker)
             {
                 taskArray[taskIndex] = Task.Factory.StartNew(
-                   obj =>
-                   {
-                       var data = (DataTrainHog)obj;
-                       TrainFromFiles(data.Examples, data.OffsetExamples, data.Enumeration, data.OffsetEnumerator,
-                           data.Count, data.ClassValue, data.Classes);
-                   }, new DataTrainHog
-                   {
-                       Examples = examples,
-                       OffsetExamples = trueFilesCount + i,
-                       Enumeration = falseExamplesFolderEnumeration,
-                       OffsetEnumerator = i,
-                       Count = (falseFilesCount - i < countFilesForWorker) ? falseFilesCount - i : countFilesForWorker,
-                       Classes = classes,
-                       ClassValue = -1
-                   });
+                    obj =>
+                    {
+                        var data = (DataTrainHog) obj;
+                        TrainFromFiles(data.Examples, data.Enumeration, data.OffsetEnumerator,
+                            data.Count, data.ClassValue, data.Classes);
+                    }, new DataTrainHog
+                    {
+                        Examples = examples,
+                        Enumeration = falseExamplesFolderEnumeration,
+                        OffsetEnumerator = i,
+                        Count = (falseFilesCount - i < countFilesForWorker) ? falseFilesCount - i : countFilesForWorker,
+                        Classes = classes,
+                        ClassValue = -1
+                    });
 
-                  taskIndex = Task.WaitAny(taskArray);
+                taskIndex = Task.WaitAny(taskArray);
             }
 
             foreach (var task in taskArray)
@@ -122,31 +123,48 @@ namespace ImageProcessingLibrary.Detection.HOG
                 task?.Wait();
             }
 
-            var trainingData = new SmoTrainingData(examples, classes, 0.15, 0.001, new Linear());
+            var trainingData = new SmoTrainingData(examples.ToArray(), classes.ToArray(), 0.15, 0.001, new Linear());
 
             svm.Train(trainingData);
         }
 
         class DataTrainHog
         {
-            public double[][] Examples { get; set; }
-            public int OffsetExamples { get; set; }
+            public List<double[]> Examples { get; set; }
             public IEnumerable<string> Enumeration { get; set; }
             public int OffsetEnumerator { get; set; }
             public int Count { get; set; }
             public double ClassValue { get; set; }
-            public double[] Classes { get; set; }
+            public List<double> Classes { get; set; }
         }
 
-        public void TrainFromFiles(double[][] examples, int offsetExamples, IEnumerable<string> enumeration, 
-            int offsetEnumerator, int count, double classValue, double[] classes)
+        private Object outputLock = new Object();
+
+        public void TrainFromFiles(List<double[]> examples, IEnumerable<string> enumeration,
+            int offsetEnumerator, int count, double classValue, List<double> classes)
         {
             for (int i = 0; i < count; i++)
             {
                 var rgbToGrayFilter = new RGBtoGrayFilter();
                 var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(offsetEnumerator + i)));
-                examples[offsetExamples + i] = ComputeHogDescriptor(image, 1, 1);
-                classes[offsetExamples + i] = classValue;
+
+                for (int j = 1; j < image.N - _windowWidth - 1; j += _windowWidth)
+                {
+                    for (int k = 1; k < image.M - _windowHeight - 1; k += _windowHeight)
+                    {
+                        Monitor.Enter(outputLock);
+                        try
+                        {
+                            examples.Add(ComputeHogDescriptor(image, j, k));
+                            classes.Add(classValue);
+                        }
+                        finally
+                        {
+                            Monitor.Exit(outputLock);
+                        }
+                    }
+                }
+                
             }
         }
 

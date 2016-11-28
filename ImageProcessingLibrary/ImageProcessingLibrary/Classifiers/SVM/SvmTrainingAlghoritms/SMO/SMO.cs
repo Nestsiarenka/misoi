@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
@@ -12,7 +15,50 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private double _c;
         private double _tolerance;
         Random random = new Random();
-        
+
+        private double examplesClass2;
+        private double alpha2;
+        private double error2;
+
+        private double examplesClass1;
+        private double alpha1;
+        private double error1;
+
+        private List<double> errorsSub;
+
+        private double r2;
+
+        private int startingPoint;
+
+        private int i;
+
+        private double s;
+        double L;
+        double H;
+
+        private double k11;
+        private double k12;
+        private double k22;
+
+        double eps = 0.001;
+
+        private double eta;
+        double a2;
+
+        private double c1;
+        private double c2;
+
+        private double L1;
+        private double H1;
+
+        private double a1;
+        private double b1;
+        private double b2;
+        private double result;
+
+        private int indexA2;
+        private int indexA1;
+
         public override void Train(TrainingData data)
         {
             var trainingData = data as SmoTrainingData;
@@ -46,9 +92,9 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             {
                 if (examineAll)
                 {
-                    for (int i = 0; i < _examples.Length; i++)
+                    for (indexA2 = 0; i < _examples.Length; indexA2++)
                     {
-                        numberOfChanged += ExamineExample(i);
+                        numberOfChanged += ExamineExample();
                     }
 
                     examineAll = false;
@@ -57,11 +103,11 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 }
                 else
                 {
-                    for (int i = 0; i < _examples.Length; i++)
+                    for (indexA2 = 0; indexA2 < _examples.Length; indexA2++)
                     {
-                        if (_alphas[i] > 0 && _alphas[i] < _c)
+                        if (_alphas[indexA2] > 0 && _alphas[indexA2] < _c)
                         {
-                            ExamineExample(i);
+                            ExamineExample();
                         }
                     }
 
@@ -70,69 +116,63 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             }
         }
 
-        private int ExamineExample(int indexA2)
+        private int ExamineExample()
         {
-            double examplesClass = _examplesClasses[indexA2];
-            double alpha2 = _alphas[indexA2];
-            double error2 = ComputeErrorWithCache(indexA2);
+            examplesClass2 = _examplesClasses[indexA2];
+            alpha2 = _alphas[indexA2];
+            error2 = ComputeErrorWithCache(indexA2);
 
-            double r2 = error2*examplesClass;
+            r2 = error2*examplesClass2;
 
             if ((r2 < -_tolerance && alpha2 < _c) ||
                 (r2 > _tolerance && alpha2 > 0))
             {
-                var errorsSub = _errorCache.Select(t => Math.Abs(error2 - t)).ToList();
-                int indexA1 = errorsSub.IndexOf(errorsSub.Max());
-                if (Optimize(indexA2, indexA1))
+                errorsSub = _errorCache.Select(t => Math.Abs(error2 - t)).ToList();
+                indexA1 = errorsSub.IndexOf(errorsSub.Max());
+                if (Optimize())
                 {
                     return 1;
                 }
 
-                var startingPoint = random.Next(_alphas.Length - 1);
-                var i = startingPoint;
+                startingPoint = random.Next(_alphas.Length - 1);
+                indexA1 = startingPoint;
                 do
                 {
-                    if (_alphas[i] > 0 && _alphas[i] < _c && Optimize(indexA2, indexA1))
+                    if (_alphas[indexA1] > 0 && _alphas[indexA1] < _c && Optimize())
                     {
                         return 1;
                     }
 
-                    i = (i + 1) % _alphas.Length;
+                    indexA1 = (indexA1 + 1) % _alphas.Length;
 
-                } while (i != startingPoint);
+                } while (indexA1 != startingPoint);
 
                 startingPoint = random.Next(_alphas.Length - 1);
-                i = startingPoint;
+                indexA1 = startingPoint;
                 do
                 {
-                    if (Optimize(indexA2, indexA1))
+                    if (Optimize())
                     {
                         return 1;
                     }
 
-                    i = (i + 1) % _alphas.Length;
+                    indexA1 = (indexA1 + 1) % _alphas.Length;
 
-                } while (i != startingPoint);
+                } while (indexA1 != startingPoint);
             }
 
             return 0;
         }
 
-        private bool Optimize(int indexA2, int indexA1)
+        private bool Optimize()
         {
             if (indexA1 == indexA2) return false;
 
-            double examplesClass1 = _examplesClasses[indexA1];
-            double alpha1 = _alphas[indexA1];
-            double error1 = ComputeErrorWithCache(indexA1);
+            examplesClass1 = _examplesClasses[indexA1];
+            alpha1 = _alphas[indexA1];
+            error1 = ComputeErrorWithCache(indexA1);
 
-            double examplesClass2 = _examplesClasses[indexA2];
-            double alpha2 = _alphas[indexA2];
-            double error2 = ComputeErrorWithCache(indexA2);
-
-            double s = examplesClass1*examplesClass2;
-            double L;
-            double H;
+            s = examplesClass1*examplesClass2;
 
             if (s < 0)
             {
@@ -147,14 +187,11 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
             if (L == H) return false;
 
-            double k11 = Kernel.Process(_examples[indexA1], _examples[indexA1]);
-            double k12 = Kernel.Process(_examples[indexA1], _examples[indexA2]);
-            double k22 = Kernel.Process(_examples[indexA2], _examples[indexA2]);
+            k11 = Kernel.Process(_examples[indexA1], _examples[indexA1]);
+            k12 = Kernel.Process(_examples[indexA1], _examples[indexA2]);
+            k22 = Kernel.Process(_examples[indexA2], _examples[indexA2]);
 
-            double eps = 0.001;
-
-            double eta = 2*k12 - k11 - k22;
-            double a2;
+            eta = 2*k12 - k11 - k22;
 
             if (eta < 0)
             {
@@ -169,11 +206,11 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             }
             else
             {
-                double c1 = eta/2;
-                double c2 = examplesClass2*(error1 - error2) - eta*alpha2;
+                c1 = eta/2;
+                c2 = examplesClass2*(error1 - error2) - eta*alpha2;
 
-                double L1 = c1*L*L + c2*L;
-                double H1 = c1*H*H + c2*H;
+                L1 = c1*L*L + c2*L;
+                H1 = c1*H*H + c2*H;
 
                 if (L1 > H1 + eps)
                 {
@@ -194,14 +231,14 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 return false;
             }
 
-            double a1 = alpha1 + s*(alpha2 - a2);
+            a1 = alpha1 + s*(alpha2 - a2);
 
-            double b1 = error1 + examplesClass1*(a1 - alpha1)*
+            b1 = error1 + examplesClass1*(a1 - alpha1)*
                         Kernel.Process(_examples[indexA1], _examples[indexA1]) +
                         examplesClass2*(a2 - alpha2)
                         *Kernel.Process(_examples[indexA1], _examples[indexA2]) + B;
 
-            double b2 = error2 + examplesClass1 * (a1 - alpha1) *
+            b2 = error2 + examplesClass1 * (a1 - alpha1) *
                         Kernel.Process(_examples[indexA1], _examples[indexA2]) +
                         examplesClass2 * (a2 - alpha2)
                         * Kernel.Process(_examples[indexA2], _examples[indexA2]) + B;
@@ -218,7 +255,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             {
                 B = (b1 + b2)/2;
             }
-
+            
             for (int i = 0; i < Weights.Length; i++)
             {
                 Weights[i] +=
@@ -236,14 +273,9 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
         private double ComputeErrorWithCache(int index)
         {
-            double result = _errorCache[index];
+            result = _errorCache[index];
 
-            if (result == 0)
-            {
-                result = ComputeError(index);
-            }
-
-            return result;
+            return result < 0 + 1e-6 ? ComputeError(index) : result;
         }
 
         private double ComputeError(int index)
@@ -253,7 +285,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
         private void UpdateErrorCache()
         {
-            for (int i = 0; i < _examples.Length; i++)
+            for ( i = 0; i < _examples.Length; i++)
             {
                 if (_alphas[i] > 0 && _alphas[i] < _c)
                 {
