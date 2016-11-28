@@ -23,7 +23,7 @@ namespace TestConsole
             classifier.TrainHog("D:\\Images\\examples\\true", "D:\\Images\\examples\\false");
             Console.WriteLine("Not async: {0}", watch.ElapsedMilliseconds);
 
-            classifier.Save("C:\\Users\\VAN\\Documents\\BSUIR2016SUM\\MISOI\\projects\\ImageProcessingLibrary");
+            classifier.Save("C:\\Users\\VAN\\Documents\\BSUIR2016SUM\\MISOI\\projects\\ImageProcessingLibrary\\file.xml");
 
             Console.ReadLine();
        }
