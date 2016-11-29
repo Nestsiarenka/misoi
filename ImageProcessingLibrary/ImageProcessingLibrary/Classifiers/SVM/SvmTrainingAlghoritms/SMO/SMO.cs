@@ -62,6 +62,8 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private int indexA2;
         private int indexA1;
 
+        private int numberOfChanged;
+
         public Smo():base()
         { }
 
@@ -91,12 +93,13 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
         private void Training()
         {
-            int numberOfChanged = 0;
             bool terminate = false;
             bool examineAll = true;
 
             while (!terminate)
             {
+                numberOfChanged = 0;
+
                 if (examineAll)
                 {
                     for (indexA2 = 0; i < _examples.Length; indexA2++)
@@ -106,7 +109,6 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
                     examineAll = false;
                     terminate = numberOfChanged == 0;
-                    numberOfChanged = 0;
                 }
                 else
                 {
@@ -114,11 +116,14 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                     {
                         if (_alphas[indexA2] > 0 && _alphas[indexA2] < _c)
                         {
-                            ExamineExample();
+                            numberOfChanged += ExamineExample();
                         }
                     }
 
-                    examineAll = true;
+                    if (numberOfChanged == 0)
+                    {
+                        examineAll = true;
+                    }
                 }
             }
         }
