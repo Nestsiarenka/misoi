@@ -10,7 +10,14 @@ namespace ImageProcessingLibrary.Classifiers.SVM.Kernels
     {
         public double Process(double[] x1, double[] x2)
         {
-            return x1.Select((t, i) => t*x2[i]).Sum();
+            double result = 0;
+
+            for (int i = 0; i < x1.Length; i++)
+            {
+                result += x1[i]*x2[i];
+            }
+
+            return result;
         }
     }
 }

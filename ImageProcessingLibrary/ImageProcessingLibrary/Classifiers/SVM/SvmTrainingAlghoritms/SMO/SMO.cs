@@ -41,7 +41,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private double k12;
         private double k22;
 
-        double eps = 0.001;
+        double eps = 1e-4;
 
         private double eta;
         double a2;
@@ -56,6 +56,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private double b1;
         private double b2;
         private double result;
+        private double oldB;
 
         private int indexA2;
         private int indexA1;
@@ -137,7 +138,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             if ((r2 < -_tolerance && alpha2 < _c) ||
                 (r2 > _tolerance && alpha2 > 0))
             {
-                indexA1 = _errorCache.Select((v, i) => new { Index = i, Value = v }).Aggregate((a, b) => (a.Value > b.Value) ? a : b).Index;
+                indexA1 = _errorCache.Select((v, i) => new { Index = i, Value = Math.Abs(v - error2) }).Aggregate((a, b) => (a.Value > b.Value) ? a : b).Index;
                 if (Optimize())
                 {
                     return 1;
@@ -194,7 +195,10 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 H = Math.Min(_c, alpha2 + alpha1);
             }
 
-            if (L == H) return false;
+            if (Math.Abs(L - H) < 1e-8)
+            {
+                return false;
+            }
 
             k11 = Kernel.Process(_examples[indexA1], _examples[indexA1]);
             k12 = Kernel.Process(_examples[indexA1], _examples[indexA2]);
@@ -235,6 +239,15 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 }
             }
 
+            if (a2 < 1e-8)
+            { 
+                a2 = 0;
+            }
+            else if (a2 > _c - 1e-8)
+            {
+                a2 = _c;
+            }
+
             if (Math.Abs(a2 - alpha2) < eps*(a2 + alpha2 + eps))
             {
                 return false;
@@ -252,6 +265,8 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                         examplesClass2 * (a2 - alpha2)
                         * Kernel.Process(_examples[indexA2], _examples[indexA2]) + B;
 
+            oldB = B;
+
             if (a1 > 0 && a1 < _c)
             {
                 B = b1;
@@ -265,6 +280,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 B = (b1 + b2)/2;
             }
             
+            //update weights
             for (int i = 0; i < Weights.Length; i++)
             {
                 Weights[i] +=
@@ -272,10 +288,24 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                     examplesClass2 * (a2 - alpha2) * _examples[indexA2][i];
             }
 
+            //update cache
+            for (int k = 0; k < _examples.Length; k++)
+            {
+                if (_alphas[k] > 0 && _alphas[k] < _c)
+                {
+                    _errorCache[k] +=
+                         examplesClass1 * (a1 - alpha1) * Kernel.Process(_examples[indexA1], _examples[k]) +
+                        examplesClass2 * (a2 - alpha2) * Kernel.Process(_examples[indexA2], _examples[k])
+                        + oldB - B;
+                }
+            }
+
+            _errorCache[indexA1] = 0;
+            _errorCache[indexA2] = 0;
+            //update cache
+
             _alphas[indexA1] = a1;
             _alphas[indexA2] = a2;
-
-            UpdateErrorCache();
 
             return true;
         }
@@ -284,27 +314,12 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         {
             result = _errorCache[index];
 
-            return result < 0 + 1e-6 ? ComputeError(index) : result;
+            return result < 1e-8 ? ComputeError(index) : result;
         }
 
         private double ComputeError(int index)
         {
             return Predict(_examples[index]) - _examplesClasses[index];
-        }
-
-        private void UpdateErrorCache()
-        {
-            for (int i = 0; i < _examples.Length; i++)
-            {
-                if (_alphas[i] > 0 && _alphas[i] < _c)
-                {
-                    _errorCache[i] = ComputeError(i);
-                }
-                else
-                {
-                    _errorCache[i] = 0;
-                }
-            }
         }
     }
 }

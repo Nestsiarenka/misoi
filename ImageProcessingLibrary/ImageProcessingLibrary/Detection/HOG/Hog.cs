@@ -153,7 +153,7 @@ namespace ImageProcessingLibrary.Detection.HOG
                 task?.Wait();
             }
 
-            var trainingData = new SmoTrainingData(examples.ToArray(), classes.ToArray(), 0.01, 1e-4, new Linear());
+            var trainingData = new SmoTrainingData(examples.ToArray(), classes.ToArray(), 0.1, 1e-3, new Linear());
 
             svm.Train(trainingData);
         }
