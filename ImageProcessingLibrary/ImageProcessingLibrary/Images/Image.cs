@@ -30,8 +30,8 @@ namespace ImageProcessingLibrary.Images
         }
 
         public int Count => N * M;
-        public int N { get; }
-        public int M { get; }
+        public int N { get; set; }
+        public int M { get; set; }
         public bool ReturnZeroIfOutOfBounds { get; set; }
 
         public Image(int n, int m)
