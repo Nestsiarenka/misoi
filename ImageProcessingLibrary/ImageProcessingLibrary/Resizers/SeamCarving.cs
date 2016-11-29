@@ -115,5 +115,30 @@ namespace ImageProcessingLibrary.Resizers
 
             return res;
         }
+
+        private void DecWidth()
+        {
+            FindEnergy();
+            FindSum();
+            FindShrinkedPixels();
+
+            int[] cropPixels = FindShrinkedPixels();
+
+            for (int i = 0; i < _image.M; i++)
+            for (int j = cropPixels[i]; j < _image.N; j++)
+            {
+                _image[i, j] = new Gray(_image[i, j + 1].G);
+            }
+        }
+
+        public Image<Gray> ChangeSize(int decWidth, int decHeight)
+        {
+            for (int i = 0; i < decWidth; i++)
+            {
+                DecWidth();
+                _image.M--;
+            }
+            return _image;
+        }
     }
 }

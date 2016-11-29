@@ -31,9 +31,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
         private double r2;
 
-        private int startingPoint;
-
-        private int i;
+        private int startingPoint;        
 
         private double s;
         double L;
@@ -99,7 +97,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             {
                 if (examineAll)
                 {
-                    for (indexA2 = 0; i < _examples.Length; indexA2++)
+                    for (indexA2 = 0; indexA2 < _examples.Length; indexA2++)
                     {
                         numberOfChanged += ExamineExample();
                     }
@@ -134,8 +132,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             if ((r2 < -_tolerance && alpha2 < _c) ||
                 (r2 > _tolerance && alpha2 > 0))
             {
-                errorsSub = _errorCache.Select(t => Math.Abs(error2 - t)).ToList();
-                indexA1 = errorsSub.IndexOf(errorsSub.Max());
+                indexA1 = _errorCache.Select((v, i) => new { Index = i, Value = v }).Aggregate((a, b) => (a.Value > b.Value) ? a : b).Index;
                 if (Optimize())
                 {
                     return 1;
@@ -292,7 +289,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
         private void UpdateErrorCache()
         {
-            for ( i = 0; i < _examples.Length; i++)
+            for (int i = 0; i < _examples.Length; i++)
             {
                 if (_alphas[i] > 0 && _alphas[i] < _c)
                 {
