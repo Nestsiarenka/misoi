@@ -23,6 +23,8 @@ namespace TestConsole
             classifier.TrainHog("D:\\Images\\examples\\true", "D:\\Images\\examples\\false");
             classifier.Save("D:\\images\\examples\\file.xml");
 
+            Console.WriteLine("Done!!!");
+
             Console.ReadLine();
        }
     }
