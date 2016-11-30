@@ -23,6 +23,21 @@ namespace TestConsole
             classifier.TrainHog("D:\\Images\\examples\\true", "D:\\Images\\examples\\false");
             classifier.Save("D:\\images\\examples\\file.xml");
 
+            //var classifier =  Hog.Load("D:\\images\\examples\\file.xml");
+
+            //var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\true");
+
+            //for (int i = 0; i < 100; i++)
+            //{
+
+            //    var rgbToGrayFilter = new RGBtoGrayFilter();
+            //    var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt( i)));
+            //    image.ReturnZeroIfOutOfBounds = true;
+
+
+            //    Console.WriteLine(classifier.Predict(image, 0, 0));
+            //}
+
             Console.WriteLine("Done!!!");
 
             Console.ReadLine();

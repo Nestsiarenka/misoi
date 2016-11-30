@@ -138,7 +138,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             if ((r2 < -_tolerance && alpha2 < _c) ||
                 (r2 > _tolerance && alpha2 > 0))
             {
-                indexA1 = _errorCache.Select((v, i) => new { Index = i, Value = Math.Abs(v - error2) }).Aggregate((a, b) => (a.Value > b.Value) ? a : b).Index;
+                indexA1 = _errorCache.Select((v, i) => new { Index = i, Value = Math.Abs(error2 - v) }).Aggregate((a, b) => (a.Value > b.Value) ? a : b).Index;
                 if (Optimize())
                 {
                     return 1;
@@ -253,7 +253,17 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 return false;
             }
 
-            a1 = alpha1 + s*(alpha2 - a2);
+            a1 = alpha1 + s*(a2 - alpha2);
+
+            if (a1 < 0)
+            {
+                a2 = s*a1;
+                a1 = 0;
+            } else if (a1 > _c)
+            {
+                a2 = s*(a1 - _c);
+                a1 = _c;
+            }
 
             b1 = error1 + examplesClass1*(a1 - alpha1)*
                         Kernel.Process(_examples[indexA1], _examples[indexA1]) +
@@ -297,6 +307,10 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                          examplesClass1 * (a1 - alpha1) * Kernel.Process(_examples[indexA1], _examples[k]) +
                         examplesClass2 * (a2 - alpha2) * Kernel.Process(_examples[indexA2], _examples[k])
                         + oldB - B;
+                }
+                else
+                {
+                    _errorCache[k] = 0;
                 }
             }
 

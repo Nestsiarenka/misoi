@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ImageProcessingLibrary.Classifiers.SVM;
 using ImageProcessingLibrary.Capacities.Structures;
 using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
 using System.IO;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Xml;
-using System.Xml.Serialization;
 using ImageProcessingLibrary.Utilities;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Classifiers.SVM.Kernels;
@@ -30,6 +27,8 @@ namespace ImageProcessingLibrary.Detection.HOG
         private const int CellSize = 8;
         [DataMember]
         private const int BlockSize = 4;
+        [DataMember]
+        private const double Eps = 1;
         [DataMember]
         private readonly int _cellsCountInWindow;
         /*
@@ -70,7 +69,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         {
             var descriptor = ComputeHogDescriptor(image, windowsX, windowsY);
 
-            return svm.Predict(descriptor) > 0;
+            return svm.Predict(descriptor) > 1;
         }
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
@@ -153,7 +152,7 @@ namespace ImageProcessingLibrary.Detection.HOG
                 task?.Wait();
             }
 
-            var trainingData = new SmoTrainingData(examples.ToArray(), classes.ToArray(), 0.1, 1e-3, new Linear());
+            var trainingData = new SmoTrainingData(examples.ToArray(), classes.ToArray(), 0.01, 1e-3, new Linear());
 
             svm.Train(trainingData);
         }
@@ -224,7 +223,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         {
             var result = new double[BlockSize * 9];
 
-            double sumOfBlock = ComputeSumOfBlock(offsetx, offsety, computedCells);
+            double normalizationValue = ComputeNormalizationValue(offsetx, offsety, computedCells);
 
             for (int i = 0; i < BlockSize; i++)
             {
@@ -235,14 +234,14 @@ namespace ImageProcessingLibrary.Detection.HOG
 
                 for (int j = 0; j < computedCells[x,y].Length; j++)
                 {
-                    result[i * 9 + j] = computedCells[x, y][j]/sumOfBlock;
+                    result[i * 9 + j] = computedCells[x, y][j]/normalizationValue;
                 }
             }
 
             return result;
         }
 
-        private double ComputeSumOfBlock(int offsetx, int offsety, double[,][] computedCells)
+        private double ComputeNormalizationValue(int offsetx, int offsety, double[,][] computedCells)
         {
             double result = 0;
 
@@ -255,11 +254,12 @@ namespace ImageProcessingLibrary.Detection.HOG
 
                 for (int j = 0; j < computedCells[x, y].Length; j++)
                 {
-                    result += computedCells[x, y].Sum();
+                    var sum = computedCells[x, y].Sum();
+                    result += sum*sum;
                 }
             }
 
-            return result;
+            return Math.Sqrt(result + Eps*Eps);
         }
 
         public double[,][] ComputeAllCellsInWindow(Image<Gray> image, int windowx, int windowy)
