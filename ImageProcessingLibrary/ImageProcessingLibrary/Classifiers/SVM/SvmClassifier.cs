@@ -15,7 +15,11 @@ namespace ImageProcessingLibrary.Classifiers.SVM
     public abstract class SvmClassifier
     {
         [DataMember]
-        protected double[] Weights;
+        protected double[][] _examples;
+        [DataMember]
+        protected double[] _examplesClasses;
+        [DataMember]
+        protected double[] _alphas;
         [DataMember]
         protected double B;
 
@@ -43,7 +47,14 @@ namespace ImageProcessingLibrary.Classifiers.SVM
 
         public double Predict(double[] example)
         {
-            return Kernel.Process(Weights, example) - B;
+            double result = 0;
+
+            for (int i = 0; i < _examples.Length; i++)
+            {
+                result += _alphas[i]*_examplesClasses[i]*Kernel.Process(_examples[i], example);
+            }
+
+            return result - B;
         }
 
         public abstract void Train(TrainingData data);

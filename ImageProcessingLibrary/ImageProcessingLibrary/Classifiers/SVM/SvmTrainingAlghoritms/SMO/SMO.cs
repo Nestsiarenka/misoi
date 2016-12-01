@@ -9,10 +9,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 {
     [DataContract]
     public class Smo : SvmClassifier
-    {
-        private double[][] _examples;
-        private double[] _examplesClasses;
-        private double[] _alphas;
+    {        
         private double[] _errorCache;
         private double _c;
         private double _tolerance;
@@ -41,7 +38,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private double k12;
         private double k22;
 
-        double eps = 1e-4;
+        double eps = 1e-3;
 
         private double eta;
         double a2;
@@ -60,6 +57,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
 
         private int indexA2;
         private int indexA1;
+        double max;
 
         private int numberOfChanged;
 
@@ -78,15 +76,15 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             Kernel = trainingData.Kernel;
             KernelType = Kernel.GetType().Name;
 
-            Weights = new double[_examples[0].Length];
+            //Weights = new double[_examples[0].Length];
             _alphas = new double[_examples.Length];
             _errorCache = new double[_examples.Length];
 
             Training();
-
-            _examples = null;
-            _examplesClasses = null;
-            _alphas = null;
+            
+            //_examples = null;
+            //_examplesClasses = null;
+            //_alphas = null;
             _errorCache = null;
     }
 
@@ -138,8 +136,19 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             if ((r2 < -_tolerance && alpha2 < _c) ||
                 (r2 > _tolerance && alpha2 > 0))
             {
-                indexA1 = _errorCache.Select((v, i) => new { Index = i, Value = Math.Abs(error2 - v) }).Aggregate((a, b) => (a.Value > b.Value) ? a : b).Index;
-                if (Optimize())
+                max = double.MinValue;
+                bool changed = false;
+                for (int i = 0; i < _errorCache.Length; i++)
+                {                    
+                    if (_alphas[i] > 0 && _alphas[i] < _c && (Math.Abs(error2 - _errorCache[i]) > max))
+                    {
+                        max = Math.Abs(error2 - _errorCache[i]);
+                        indexA1 = i;
+                        changed = true;
+                    }
+                }
+
+                if (changed && Optimize())
                 {
                     return 1;
                 }
@@ -239,31 +248,12 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 }
             }
 
-            if (a2 < 1e-8)
-            { 
-                a2 = 0;
-            }
-            else if (a2 > _c - 1e-8)
-            {
-                a2 = _c;
-            }
-
             if (Math.Abs(a2 - alpha2) < eps*(a2 + alpha2 + eps))
             {
                 return false;
             }
 
-            a1 = alpha1 + s*(a2 - alpha2);
-
-            if (a1 < 0)
-            {
-                a2 = s*a1;
-                a1 = 0;
-            } else if (a1 > _c)
-            {
-                a2 = s*(a1 - _c);
-                a1 = _c;
-            }
+            a1 = alpha1 + s*(alpha2 - a2);
 
             b1 = error1 + examplesClass1*(a1 - alpha1)*
                         Kernel.Process(_examples[indexA1], _examples[indexA1]) +
@@ -291,12 +281,12 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             }
             
             //update weights
-            for (int i = 0; i < Weights.Length; i++)
+            /*for (int i = 0; i < Weights.Length; i++)
             {
                 Weights[i] +=
                     examplesClass1 * (a1 - alpha1) * _examples[indexA1][i] +
                     examplesClass2 * (a2 - alpha2) * _examples[indexA2][i];
-            }
+            }*/
 
             //update cache
             for (int k = 0; k < _examples.Length; k++)
@@ -328,7 +318,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         {
             result = _errorCache[index];
 
-            return result < 1e-8 ? ComputeError(index) : result;
+            return result > -1e-8 && result < 1e8 ? ComputeError(index) : result;
         }
 
         private double ComputeError(int index)

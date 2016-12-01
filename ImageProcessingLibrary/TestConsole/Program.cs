@@ -20,22 +20,33 @@ namespace TestConsole
        {
             var classifier = new Hog(32, 32);
 
-            classifier.TrainHog("D:\\Images\\examples\\true", "D:\\Images\\examples\\false");
+            classifier.TrainHog("D:\\Images\\examples\\temp\\true", "D:\\Images\\examples\\temp\\false");
             classifier.Save("D:\\images\\examples\\file.xml");
 
-            //var classifier =  Hog.Load("D:\\images\\examples\\file.xml");
+            var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\temp\\true");
 
-            //var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\true");
+            for (int i = 0; i < 8; i++)
+            {
 
-            //for (int i = 0; i < 100; i++)
+                var rgbToGrayFilter = new RGBtoGrayFilter();
+                var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(i)));
+                image.ReturnZeroIfOutOfBounds = true;
+
+                Console.WriteLine(classifier.Predict(image, 2, 2));
+            }
+
+            //var classifier = Hog.Load("D:\\images\\examples\\file.xml");
+
+            //var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\temp\\true");
+
+            //for (int i = 0; i < 8; i++)
             //{
 
             //    var rgbToGrayFilter = new RGBtoGrayFilter();
-            //    var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt( i)));
+            //    var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(i)));
             //    image.ReturnZeroIfOutOfBounds = true;
 
-
-            //    Console.WriteLine(classifier.Predict(image, 0, 0));
+            //    Console.WriteLine(classifier.Predict(image, 2, 2));
             //}
 
             Console.WriteLine("Done!!!");

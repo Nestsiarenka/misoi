@@ -69,7 +69,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         {
             var descriptor = ComputeHogDescriptor(image, windowsX, windowsY);
 
-            return svm.Predict(descriptor) > 1;
+            return svm.Predict(descriptor) > 0.9;
         }
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
@@ -177,9 +177,9 @@ namespace ImageProcessingLibrary.Detection.HOG
                 var rgbToGrayFilter = new RGBtoGrayFilter();
                 var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(offsetEnumerator + i)));
                 image.ReturnZeroIfOutOfBounds = true;
-                for (int j = 0; j < image.N - _windowWidth; j += _windowWidth)
+                for (int j = 2; j < image.N - _windowWidth; j += _windowWidth)
                 {
-                    for (int k = 0; k < image.M - _windowHeight; k += _windowHeight)
+                    for (int k = 2; k < image.M - _windowHeight; k += _windowHeight)
                     {
                         Monitor.Enter(outputLock);
                         try
