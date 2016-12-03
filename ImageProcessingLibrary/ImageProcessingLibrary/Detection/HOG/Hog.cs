@@ -49,7 +49,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         [DataMember]
         readonly double[] _bins =
         {
-            0, 10, 30, 50, 70, 90, 110, 130, 150, 170, 180
+            -10, 10, 30, 50, 70, 90, 110, 130, 150, 170, 190
         };
 
         public Hog(int windowWidth, int windowHeight)
@@ -69,7 +69,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         {
             var descriptor = ComputeHogDescriptor(image, windowsX, windowsY);
 
-            return svm.Predict(descriptor) > 0.9;
+            return svm.Predict(descriptor) + svm.B > 0;
         }
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
@@ -197,7 +197,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             }
         }
 
-        private double[] ComputeHogDescriptor(Image<Gray> image, int windowx, int windowy)
+        public double[] ComputeHogDescriptor(Image<Gray> image, int windowx, int windowy)
         {
             return ComputeBlockNormalization(ComputeAllCellsInWindow(image, windowx, windowy));
         }
@@ -211,7 +211,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             {
                 for (int j = 0; j < _blocksInRow; j++)
                 {
-                    Array.Copy(NormalizeBlock(j, i, computedCells), 0, hogFeature, 36 * evaluatedBlocks, 36);
+                    Array.Copy(NormalizeBlock(j, i, computedCells), 0, hogFeature, BlockSize * 9 * evaluatedBlocks, BlockSize * 9);
 
                     evaluatedBlocks++;
                 }
@@ -365,16 +365,21 @@ namespace ImageProcessingLibrary.Detection.HOG
             {
                 for (; x < xBound; x++)
                 {
-                    var dx = Math.Abs(Convert.ToInt16(image[x - 1, y].G - image[x + 1, y].G));
-                    var dy = Math.Abs(Convert.ToInt16(image[x, y - 1].G - image[x, y + 1].G));
+                    var dx = Convert.ToInt16(image[x - 1, y].G - image[x + 1, y].G);
+                    var dy = Convert.ToInt16(image[x, y - 1].G - image[x, y + 1].G);
 
                     double magnitute = Math.Sqrt(dx*dx + dy*dy);
                     double angle = Math.Atan2(dy, dx)*180/Math.PI;
 
-                    var binIndex = (int) Math.Floor(angle/20.0 + 0.5);
-                    orientedHistogramTemp[binIndex] += Math.Abs(_bins[binIndex] - angle) / 20.0 * magnitute;
-                    binIndex++;
-                    orientedHistogramTemp[binIndex] += Math.Abs(_bins[binIndex] - angle) / 20.0 * magnitute;
+                    if (angle < 0)
+                    {
+                        angle += 180;
+                    }
+
+                    var firstBin = (int) Math.Floor(angle/20.0 + 0.5);
+                    var secondBin = firstBin + 1;
+                    orientedHistogramTemp[firstBin] += Math.Abs(_bins[secondBin] - angle) / 20.0 * magnitute;
+                    orientedHistogramTemp[secondBin] += Math.Abs(_bins[firstBin] - angle) / 20.0 * magnitute;
                 }
             }
 

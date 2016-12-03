@@ -21,7 +21,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM
         [DataMember]
         protected double[] _alphas;
         [DataMember]
-        protected double B;
+        public double B;
 
         [DataMember]
         protected string KernelType; 

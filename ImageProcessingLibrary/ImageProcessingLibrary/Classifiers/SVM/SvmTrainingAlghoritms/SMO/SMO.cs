@@ -24,8 +24,6 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
         private double alpha1;
         private double error1;
 
-        private List<double> errorsSub;
-
         private double r2;
 
         private int startingPoint;        
@@ -76,7 +74,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             Kernel = trainingData.Kernel;
             KernelType = Kernel.GetType().Name;
 
-            //Weights = new double[_examples[0].Length];
+            //Weights = new double[_example+s[0].Length];
             _alphas = new double[_examples.Length];
             _errorCache = new double[_examples.Length];
 
@@ -103,8 +101,8 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                     {
                         numberOfChanged += ExamineExample();
                     }
-
                     examineAll = false;
+
                     terminate = numberOfChanged == 0;
                 }
                 else
@@ -170,6 +168,7 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
                 indexA1 = startingPoint;
                 do
                 {
+
                     if (Optimize())
                     {
                         return 1;
@@ -191,8 +190,8 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             alpha1 = _alphas[indexA1];
             error1 = ComputeErrorWithCache(indexA1);
 
-            s = examplesClass1*examplesClass2;
 
+            s = examplesClass1*examplesClass2;
             if (s < 0)
             {
                 L = Math.Max(0, alpha2 - alpha1);
