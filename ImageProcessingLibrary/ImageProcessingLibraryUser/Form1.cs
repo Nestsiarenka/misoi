@@ -162,7 +162,7 @@ namespace ImageProcessingLibraryUser
             {
 
                 var resizer = new BicubicResizer();
-                var image = resizer.Resize(_inputImageGrayLevel, _inputImageGrayLevel.N, _inputImageGrayLevel.M,
+                var image = resizer.Resize(_inputImageGrayLevel,
                         _inputImageGrayLevel.N - widthWith, _inputImageGrayLevel.M - heightWith);
 
                 DrawImage(image, InputPictureBox);
