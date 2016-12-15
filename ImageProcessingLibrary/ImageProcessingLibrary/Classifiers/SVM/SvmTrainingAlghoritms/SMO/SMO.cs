@@ -136,13 +136,18 @@ namespace ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO
             {
                 max = double.MinValue;
                 bool changed = false;
+
                 for (int i = 0; i < _errorCache.Length; i++)
-                {                    
-                    if (_alphas[i] > 0 && _alphas[i] < _c && (Math.Abs(error2 - _errorCache[i]) > max))
+                {
+                    if (_alphas[i] > 0 && _alphas[i] < _c)
                     {
-                        max = Math.Abs(error2 - _errorCache[i]);
-                        indexA1 = i;
-                        changed = true;
+                        var tempError = ComputeErrorWithCache(i);
+                        if (Math.Abs(error2 - tempError) > max)
+                        {
+                            max = Math.Abs(error2 - _errorCache[i]);
+                            indexA1 = i;
+                            changed = true;
+                        }
                     }
                 }
 

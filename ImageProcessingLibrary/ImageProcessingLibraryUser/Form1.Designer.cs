@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea4 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series4 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.InputPictureBox = new System.Windows.Forms.PictureBox();
             this.OutputPictureBox = new System.Windows.Forms.PictureBox();
             this.InputHistogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -42,6 +42,13 @@
             this.PickFilterLabel = new System.Windows.Forms.Label();
             this.loadPictureDialog = new System.Windows.Forms.OpenFileDialog();
             this.UndoAll = new System.Windows.Forms.Button();
+            this.WidthTextBox = new System.Windows.Forms.TextBox();
+            this.HeightTextBox = new System.Windows.Forms.TextBox();
+            this.WidthLabel = new System.Windows.Forms.Label();
+            this.HeightLabel = new System.Windows.Forms.Label();
+            this.pxLabel = new System.Windows.Forms.Label();
+            this.pxLabel1 = new System.Windows.Forms.Label();
+            this.ResizeButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.InputPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.OutputPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InputHistogram)).BeginInit();
@@ -68,30 +75,30 @@
             // 
             // InputHistogram
             // 
-            chartArea3.Name = "ChartArea1";
-            this.InputHistogram.ChartAreas.Add(chartArea3);
+            chartArea1.Name = "ChartArea1";
+            this.InputHistogram.ChartAreas.Add(chartArea1);
             this.InputHistogram.Location = new System.Drawing.Point(491, 26);
             this.InputHistogram.Name = "InputHistogram";
             this.InputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent;
-            series3.ChartArea = "ChartArea1";
-            series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
-            series3.Name = "Histogram";
-            this.InputHistogram.Series.Add(series3);
+            series1.ChartArea = "ChartArea1";
+            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series1.Name = "Histogram";
+            this.InputHistogram.Series.Add(series1);
             this.InputHistogram.Size = new System.Drawing.Size(436, 361);
             this.InputHistogram.TabIndex = 2;
             this.InputHistogram.Text = "Histogram of input image";
             // 
             // OutputHistogram
             // 
-            chartArea4.Name = "ChartArea1";
-            this.OutputHistogram.ChartAreas.Add(chartArea4);
+            chartArea2.Name = "ChartArea1";
+            this.OutputHistogram.ChartAreas.Add(chartArea2);
             this.OutputHistogram.Location = new System.Drawing.Point(491, 419);
             this.OutputHistogram.Name = "OutputHistogram";
             this.OutputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SeaGreen;
-            series4.ChartArea = "ChartArea1";
-            series4.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
-            series4.Name = "Histogram";
-            this.OutputHistogram.Series.Add(series4);
+            series2.ChartArea = "ChartArea1";
+            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series2.Name = "Histogram";
+            this.OutputHistogram.Series.Add(series2);
             this.OutputHistogram.Size = new System.Drawing.Size(436, 361);
             this.OutputHistogram.TabIndex = 3;
             this.OutputHistogram.Text = "Histogram of output image";
@@ -149,11 +156,85 @@
             this.UndoAll.UseVisualStyleBackColor = true;
             this.UndoAll.Click += new System.EventHandler(this.UndoAll_Click);
             // 
+            // WidthTextBox
+            // 
+            this.WidthTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.WidthTextBox.Location = new System.Drawing.Point(940, 506);
+            this.WidthTextBox.Name = "WidthTextBox";
+            this.WidthTextBox.Size = new System.Drawing.Size(110, 22);
+            this.WidthTextBox.TabIndex = 9;
+            // 
+            // HeightTextBox
+            // 
+            this.HeightTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.HeightTextBox.Location = new System.Drawing.Point(940, 554);
+            this.HeightTextBox.Name = "HeightTextBox";
+            this.HeightTextBox.Size = new System.Drawing.Size(110, 22);
+            this.HeightTextBox.TabIndex = 10;
+            // 
+            // WidthLabel
+            // 
+            this.WidthLabel.AutoSize = true;
+            this.WidthLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.WidthLabel.Location = new System.Drawing.Point(937, 484);
+            this.WidthLabel.Name = "WidthLabel";
+            this.WidthLabel.Size = new System.Drawing.Size(100, 16);
+            this.WidthLabel.TabIndex = 11;
+            this.WidthLabel.Text = "Down width with";
+            // 
+            // HeightLabel
+            // 
+            this.HeightLabel.AutoSize = true;
+            this.HeightLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.HeightLabel.Location = new System.Drawing.Point(937, 535);
+            this.HeightLabel.Name = "HeightLabel";
+            this.HeightLabel.Size = new System.Drawing.Size(106, 16);
+            this.HeightLabel.TabIndex = 12;
+            this.HeightLabel.Text = "Down height with";
+            // 
+            // pxLabel
+            // 
+            this.pxLabel.AutoSize = true;
+            this.pxLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.pxLabel.Location = new System.Drawing.Point(1054, 508);
+            this.pxLabel.Name = "pxLabel";
+            this.pxLabel.Size = new System.Drawing.Size(22, 16);
+            this.pxLabel.TabIndex = 13;
+            this.pxLabel.Text = "px";
+            // 
+            // pxLabel1
+            // 
+            this.pxLabel1.AutoSize = true;
+            this.pxLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F);
+            this.pxLabel1.Location = new System.Drawing.Point(1054, 556);
+            this.pxLabel1.Name = "pxLabel1";
+            this.pxLabel1.Size = new System.Drawing.Size(22, 16);
+            this.pxLabel1.TabIndex = 14;
+            this.pxLabel1.Text = "px";
+            // 
+            // ResizeButton
+            // 
+            this.ResizeButton.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResizeButton.Location = new System.Drawing.Point(940, 598);
+            this.ResizeButton.Name = "ResizeButton";
+            this.ResizeButton.Size = new System.Drawing.Size(172, 47);
+            this.ResizeButton.TabIndex = 15;
+            this.ResizeButton.Text = "Apply resize";
+            this.ResizeButton.UseVisualStyleBackColor = true;
+            this.ResizeButton.Click += new System.EventHandler(this.ResizeButton_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1124, 793);
+            this.Controls.Add(this.ResizeButton);
+            this.Controls.Add(this.pxLabel1);
+            this.Controls.Add(this.pxLabel);
+            this.Controls.Add(this.HeightLabel);
+            this.Controls.Add(this.WidthLabel);
+            this.Controls.Add(this.HeightTextBox);
+            this.Controls.Add(this.WidthTextBox);
             this.Controls.Add(this.UndoAll);
             this.Controls.Add(this.PickFilterLabel);
             this.Controls.Add(this.FiltersComboBox);
@@ -187,6 +268,13 @@
         private System.Windows.Forms.Label PickFilterLabel;
         private System.Windows.Forms.OpenFileDialog loadPictureDialog;
         private System.Windows.Forms.Button UndoAll;
+        private System.Windows.Forms.TextBox WidthTextBox;
+        private System.Windows.Forms.TextBox HeightTextBox;
+        private System.Windows.Forms.Label WidthLabel;
+        private System.Windows.Forms.Label HeightLabel;
+        private System.Windows.Forms.Label pxLabel;
+        private System.Windows.Forms.Label pxLabel1;
+        private System.Windows.Forms.Button ResizeButton;
     }
 }
 

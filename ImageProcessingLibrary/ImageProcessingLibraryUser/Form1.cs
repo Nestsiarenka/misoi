@@ -8,6 +8,7 @@ using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Filters.SpatialFilters;
 using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Interfaces;
+using ImageProcessingLibrary.Resizers;
 using ImageProcessingLibrary.Utilities;
 using ImageProcessingLibraryUser.Properties;
 
@@ -150,6 +151,22 @@ namespace ImageProcessingLibraryUser
 
             DrawHistagram(new Histogram(_outputImageGrayLevel), OutputHistogram);
             DrawImage(_outputImageGrayLevel, OutputPictureBox);
+        }
+
+        private void ResizeButton_Click(object sender, EventArgs e)
+        {
+            int widthWith, heightWith;
+
+            if (int.TryParse(WidthTextBox.Text, out widthWith) 
+                && int.TryParse(HeightTextBox.Text, out heightWith))
+            {
+
+                var resizer = new BicubicResizer();
+                var image = resizer.Resize(_inputImageGrayLevel, _inputImageGrayLevel.N, _inputImageGrayLevel.M,
+                        _inputImageGrayLevel.N - widthWith, _inputImageGrayLevel.M - heightWith);
+
+                DrawImage(image, InputPictureBox);
+            }
         }
     }
 }

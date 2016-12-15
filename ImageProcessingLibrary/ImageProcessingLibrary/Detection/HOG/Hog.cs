@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using ImageProcessingLibrary.Capacities.Structures;
 using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
 using System.IO;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Runtime.Serialization;
 using System.Threading;
 using System.Xml;
 using ImageProcessingLibrary.Utilities;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Classifiers.SVM.Kernels;
+using Gray = ImageProcessingLibrary.Capacities.Structures.Gray;
 
 namespace ImageProcessingLibrary.Detection.HOG
 {
@@ -69,7 +70,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         {
             var descriptor = ComputeHogDescriptor(image, windowsX, windowsY);
 
-            return svm.Predict(descriptor) + svm.B > 0;
+            return svm.Predict(descriptor) > 0;
         }
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
@@ -152,7 +153,7 @@ namespace ImageProcessingLibrary.Detection.HOG
                 task?.Wait();
             }
 
-            var trainingData = new SmoTrainingData(examples.ToArray(), classes.ToArray(), 0.01, 1e-3, new Linear());
+            var trainingData = new SmoTrainingData(examples.ToArray(), classes.ToArray(), 0.1, 1e-3, new Linear());
 
             svm.Train(trainingData);
         }
@@ -176,7 +177,6 @@ namespace ImageProcessingLibrary.Detection.HOG
             {
                 var rgbToGrayFilter = new RGBtoGrayFilter();
                 var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(offsetEnumerator + i)));
-                image.ReturnZeroIfOutOfBounds = true;
                 for (int j = 2; j < image.N - _windowWidth; j += _windowWidth)
                 {
                     for (int k = 2; k < image.M - _windowHeight; k += _windowHeight)
@@ -184,6 +184,7 @@ namespace ImageProcessingLibrary.Detection.HOG
                         Monitor.Enter(outputLock);
                         try
                         {
+                            
                             examples.Add(ComputeHogDescriptor(image, j, k));
                             classes.Add(classValue);
                         }
@@ -207,11 +208,11 @@ namespace ImageProcessingLibrary.Detection.HOG
             var hogFeature = new double[_sizeOfHogFeature];
             int evaluatedBlocks = 0;
             
-            for (int i = 0; i < _blocksInColumn; i++)
+            for (int y = 0; y < _blocksInColumn; y++)
             {
-                for (int j = 0; j < _blocksInRow; j++)
+                for (int x = 0; x < _blocksInRow; x++)
                 {
-                    Array.Copy(NormalizeBlock(j, i, computedCells), 0, hogFeature, BlockSize * 9 * evaluatedBlocks, BlockSize * 9);
+                    Array.Copy(NormalizeBlock(x, y, computedCells), 0, hogFeature, BlockSize * 9 * evaluatedBlocks, BlockSize * 9);
 
                     evaluatedBlocks++;
                 }
@@ -223,7 +224,7 @@ namespace ImageProcessingLibrary.Detection.HOG
         {
             var result = new double[BlockSize * 9];
 
-            double normalizationValue = ComputeNormalizationValue(offsetx, offsety, computedCells);
+            double normalizationValue = ComputeSumOfBlock(offsetx, offsety, computedCells);
 
             for (int i = 0; i < BlockSize; i++)
             {
@@ -241,7 +242,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             return result;
         }
 
-        private double ComputeNormalizationValue(int offsetx, int offsety, double[,][] computedCells)
+        private double ComputeSumOfBlock(int offsetx, int offsety, double[,][] computedCells)
         {
             double result = 0;
 
@@ -254,12 +255,12 @@ namespace ImageProcessingLibrary.Detection.HOG
 
                 for (int j = 0; j < computedCells[x, y].Length; j++)
                 {
-                    var sum = computedCells[x, y].Sum();
-                    result += sum*sum;
+                    var coord = computedCells[x, y][j];
+                    result += coord*coord;
                 }
             }
 
-            return Math.Sqrt(result + Eps*Eps);
+            return Math.Sqrt(result + Eps);
         }
 
         public double[,][] ComputeAllCellsInWindow(Image<Gray> image, int windowx, int windowy)
@@ -355,18 +356,16 @@ namespace ImageProcessingLibrary.Detection.HOG
         private double[] ComputeOrientedHistogramForCell(Image<Gray> image, int offsetx, int offsety)
         {
             var orientedHistogramTemp = new double[11];
-
-            int x = offsetx;
-            int y = offsety;
+            
             int xBound = offsetx + CellSize;
             int yBound = offsety + CellSize;
 
-            for (; y < yBound; y++)
+            for (int y = offsety; y < yBound; y++)
             {
-                for (; x < xBound; x++)
+                for (int x = offsetx; x < xBound; x++)
                 {
-                    var dx = Convert.ToInt16(image[x - 1, y].G - image[x + 1, y].G);
-                    var dy = Convert.ToInt16(image[x, y - 1].G - image[x, y + 1].G);
+                    var dx = Convert.ToInt16(image[x + 1, y].G - image[x - 1, y].G);
+                    var dy = Convert.ToInt16(image[x, y + 1].G - image[x, y - 1].G);
 
                     double magnitute = Math.Sqrt(dx*dx + dy*dy);
                     double angle = Math.Atan2(dy, dx)*180/Math.PI;

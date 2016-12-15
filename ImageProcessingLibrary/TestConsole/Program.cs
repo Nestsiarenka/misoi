@@ -1,45 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImageProcessingLibrary.Capacities.Structures;
-using ImageProcessingLibrary.Classifiers.SVM;
-using ImageProcessingLibrary.Classifiers.SVM.SvmTrainingAlghoritms.SMO;
 using ImageProcessingLibrary.Detection.HOG;
 using ImageProcessingLibrary.Filters.PointFilters;
-using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Utilities;
-using ImageProcessingLibrary.Classifiers.SVM.Kernels;
 
 namespace TestConsole
 {
     class Program
     {
         static void Main(string[] args)
-       {
+        {
             var classifier = new Hog(32, 32);
 
-            classifier.TrainHog("D:\\Images\\examples\\true", "D:\\Images\\examples\\false");
-            classifier.Save("D:\\images\\examples\\file.xml");
+            classifier.TrainHog("D:\\Images\\examples\\trueTmp", "D:\\Images\\examples\\falseTmp");
+            classifier.Save("D:\\images\\examples\\file21000.xml");
 
-            //var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\temp\\false");
+            ////var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\temp\\false");
 
-            //for (int i = 0; i < 2; i++)
-            //{
+            ////for (int i = 0; i < 2; i++)
+            ////{
+            ////    var rgbToGrayFilter = new RGBtoGrayFilter();
+            ////    var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(i)));
+            ////    image.ReturnZeroIfOutOfBounds = true;
 
-            //    var rgbToGrayFilter = new RGBtoGrayFilter();
-            //    var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(enumeration.ElementAt(i)));
-            //    image.ReturnZeroIfOutOfBounds = true;
-
-            //    Console.WriteLine(classifier.Predict(image, 2, 2));
-            //}
+            ////    Console.WriteLine(classifier.Predict(image, 2, 2));
+            ////}
 
 
-            //var classifier = Hog.Load("D:\\images\\examples\\file.xml");
+            //var classifier = Hog.Load("D:\\images\\examples\\file1.xml");
 
-            //var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\temp\\true");
+            //var enumeration = Directory.EnumerateFiles("D:\\Images\\examples\\false");
 
             //for (int i = 0; i < 8; i++)
             //{
@@ -60,7 +52,7 @@ namespace TestConsole
             //SvmClassifier svm = new Smo();
             //double[][] examples = new double[17][];
             //double[] examplesClasses = new double[17];
-            //examples[0] = new double[] { 2,  5}; examplesClasses[0] = 1;
+            //examples[0] = new double[] { 2, 5 }; examplesClasses[0] = 1;
             //examples[1] = new double[] { 3, 8 }; examplesClasses[1] = 1;
             //examples[2] = new double[] { 4, 6 }; examplesClasses[2] = 1;
             //examples[3] = new double[] { 4, 7 }; examplesClasses[3] = 1;
@@ -77,12 +69,15 @@ namespace TestConsole
             //examples[14] = new double[] { 10, 6 }; examplesClasses[14] = -1;
             //examples[15] = new double[] { 10, 4 }; examplesClasses[15] = -1;
             //examples[16] = new double[] { 11, 5 }; examplesClasses[16] = -1;
-            //SmoTrainingData trainingData = new SmoTrainingData(examples, examplesClasses, 0.01, 1e-4, new Linear());
+            //SmoTrainingData trainingData = new SmoTrainingData(examples, examplesClasses, 0.01, 1e-3, new Linear());
             //svm.Train(trainingData);
 
-            //double[] example = new double[] {7, 7};
+            //double[] example = { 4, 6 };
 
-            //Console.WriteLine(svm.Predict(example) > 0 );
+            //Console.WriteLine(svm.Predict(example));
+            //var rgbToGrayFilter = new RGBtoGrayFilter();
+            //var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile("D:\\Images\\examples\\true\\1.jpg"));
+            //var vector1 = new Hog(32, 32).ComputeHogDescriptor(image, 2, 2);
 
             Console.WriteLine("Done!!!");
 
