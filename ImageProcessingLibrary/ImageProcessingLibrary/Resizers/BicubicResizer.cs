@@ -50,8 +50,9 @@ namespace ImageProcessingLibrary.Resizers
                         a2 = (short)(1.0 / 2 * d0 + 1.0 / 2 * d2);
                         a3 = (short)(-1.0 / 6 * d0 - 1.0 / 2 * d2 + 1.0 / 6 * d3);
 
-                        var newPixel = a0 + a1*dy + a2*dy*dy + a3*dy*dy*dy;
-                        var newPixelByte = Convert.ToByte(newPixel > 255 ? 255 : newPixel);
+                        double newPixel = a0 + a1*dy + a2*dy*dy + a3*dy*dy*dy;
+                        
+                        var newPixelByte = Convert.ToByte(newPixel > 255 ? 255 : newPixel < 0 ? 0 : newPixel);
                         result[j, i] = new Gray(newPixelByte);
                     }
                 }

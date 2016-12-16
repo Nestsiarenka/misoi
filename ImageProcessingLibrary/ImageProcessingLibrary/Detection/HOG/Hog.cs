@@ -13,12 +13,16 @@ using ImageProcessingLibrary.Utilities;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Classifiers.SVM.Kernels;
 using Gray = ImageProcessingLibrary.Capacities.Structures.Gray;
+using ImageProcessingLibrary.Resizers;
+using ImageProcessingLibrary.Filters.SpatialFilters;
 
 namespace ImageProcessingLibrary.Detection.HOG
 {
     [DataContract]
     public class Hog
     {
+        [DataMember]
+        private const double scale = 1.2;
         //private readonly Image<Gray> _image;
         [DataMember]
         private readonly int _windowWidth;
@@ -66,11 +70,60 @@ namespace ImageProcessingLibrary.Detection.HOG
         private Hog()
         { }
 
+        public List<Rectangle> FindFaces (Image<Gray> image)
+        {
+            var resizer = new BicubicResizer();
+            var tempImage = image;
+
+            List<Image<Gray>> scaledImages = new List<Image<Gray>>();
+
+            while(tempImage.N >= 32 && tempImage.M >= 32)
+            {
+                scaledImages.Add(tempImage);
+                tempImage = resizer.Resize(image, (int)(tempImage.N / scale), (int)(tempImage.M / scale));                
+            }
+
+            List<Rectangle> rectangles = new List<Rectangle>();
+
+            for (int i = 0; i < scaledImages.Count; i++)
+            { 
+                int sizeScaled = (int)(32 * Math.Pow(scale, i));
+
+                Image<Gray> currentImage = scaledImages[i];
+
+                for (int y = 2; y < currentImage.M - 32; y += 4)
+                {
+                    int yScaled = (int)(y * Math.Pow(scale, i));
+
+                    for (int x = 2; x < currentImage.N - 32;  x += 4)
+                    {                      
+                        if (Predict(currentImage, x, y))
+                        {
+                            int xScaled = (int)(x * Math.Pow(scale, i));
+                            rectangles.Add(new Rectangle(xScaled, yScaled, sizeScaled, sizeScaled));
+                        }                       
+                    }
+                }
+            }
+
+            return rectangles;
+        }
+        //parall this tasks
+        public void TaskMethod(Image<Gray> image )
+        {
+            //rescale
+
+            //predict cicle -> rectangles
+
+            //clasterization -> less number of rectangles            
+        }
+
+
         public bool Predict(Image<Gray> image, int windowsX, int windowsY)
         {
             var descriptor = ComputeHogDescriptor(image, windowsX, windowsY);
 
-            return svm.Predict(descriptor) > 0;
+            return svm.Predict(descriptor) > 1;
         }
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
