@@ -81,7 +81,7 @@ namespace TestConsole
 
             Hog hog = Hog.Load("D:\\images\\examples\\file1.xml");
             var rgbToGrayFilter = new RGBtoGrayFilter();
-            var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(@"D:\Images\examples\data\test_scenes\test_jpg\bttf206.jpg"));
+            var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(@"D:\Images\examples\data\test_scenes\test_jpg\judybats.jpg"));
 
             var bitmap = Converter.ToBitmap(image);
             var faces = hog.FindFaces(image);
@@ -95,7 +95,7 @@ namespace TestConsole
                 {
                     using (Pen thick_pen = new Pen(Color.Blue, 5))
                     {
-                        gr.DrawRectangle(thick_pen, item);
+                        gr.DrawRectangle(thick_pen, item.rectangle);
                     }
                 }                
             }
@@ -103,8 +103,6 @@ namespace TestConsole
             newBitmap.Save(@"D:\Images\examples\faces.jpg");
 
             Console.WriteLine("Done!!!");
-
-            Console.ReadLine();
-       }
+        }
     }
 }

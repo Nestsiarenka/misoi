@@ -70,24 +70,39 @@ namespace ImageProcessingLibrary.Detection.HOG
         private Hog()
         { }
 
-        public List<Rectangle> FindFaces (Image<Gray> image)
+        public struct PredictionRectangle
+        {
+            public Rectangle rectangle { get; set; }
+            public double prediction { get; set; }
+        }
+
+        private List<PredictionRectangle> NonMaximaSupression(List<PredictionRectangle> srcRectangels, double trashHold)
+        {
+
+        }
+
+        public List<PredictionRectangle> FindFaces (Image<Gray> image)
         {
             var resizer = new BicubicResizer();
             var tempImage = image;
 
             List<Image<Gray>> scaledImages = new List<Image<Gray>>();
 
-            while(tempImage.N >= 32 && tempImage.M >= 32)
-            {
+            while(tempImage.N >= 36 && tempImage.M >= 36)
+            {               
+                var bitmap = Converter.ToBitmap(tempImage);                
+
                 scaledImages.Add(tempImage);
-                tempImage = resizer.Resize(image, (int)(tempImage.N / scale), (int)(tempImage.M / scale));                
+                tempImage = resizer.Resize(image, (int)(tempImage.N / scale), (int)(tempImage.M / scale));
             }
 
-            List<Rectangle> rectangles = new List<Rectangle>();
+            var rectangles = new List<PredictionRectangle>();
+            
 
             for (int i = 0; i < scaledImages.Count; i++)
             { 
-                int sizeScaled = (int)(32 * Math.Pow(scale, i));
+                int windowSizeScaled = (int)(32 * Math.Pow(scale, i));
+                var rectanglesTemp = new List<PredictionRectangle>();
 
                 Image<Gray> currentImage = scaledImages[i];
 
@@ -96,17 +111,24 @@ namespace ImageProcessingLibrary.Detection.HOG
                     int yScaled = (int)(y * Math.Pow(scale, i));
 
                     for (int x = 2; x < currentImage.N - 32;  x += 4)
-                    {                      
-                        if (Predict(currentImage, x, y))
+                    {
+                        var predictionResult = Predict(currentImage, x, y);
+                        if (predictionResult > 1)
                         {
                             int xScaled = (int)(x * Math.Pow(scale, i));
-                            rectangles.Add(new Rectangle(xScaled, yScaled, sizeScaled, sizeScaled));
+                            var predictionRectangle = new PredictionRectangle();
+                            predictionRectangle.prediction = predictionResult;
+                            predictionRectangle.rectangle = new Rectangle(xScaled, yScaled, windowSizeScaled, windowSizeScaled);
+                            rectanglesTemp.Add(predictionRectangle);
                         }                       
                     }
                 }
+                rectanglesTemp.Sort();
             }
 
-            return rectangles;
+            var max = rectangles.Max(x => x.prediction);
+
+            return rectangles.Where(x => x.prediction > max / 1.5 && x.prediction < max).ToList();
         }
         //parall this tasks
         public void TaskMethod(Image<Gray> image )
@@ -119,11 +141,11 @@ namespace ImageProcessingLibrary.Detection.HOG
         }
 
 
-        public bool Predict(Image<Gray> image, int windowsX, int windowsY)
+        public double Predict(Image<Gray> image, int windowsX, int windowsY)
         {
             var descriptor = ComputeHogDescriptor(image, windowsX, windowsY);
 
-            return svm.Predict(descriptor) > 1;
+            return svm.Predict(descriptor);
         }
 
         public void TrainHog(string trueExamplesFolderPath, string falseExamplesFolderPath)
