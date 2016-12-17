@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.SymbolStore;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -34,7 +36,7 @@ namespace ImageProcessingLibrary.Segmentation
                         && (s >= 0.1) && (s <= 0.9)
                         && !((cb >= 60) && (cr <= 130) && (cb >= 130) && (cr <= 160)))
                     {
-                        resultImage[j, i] = new RGB(255,255, 255);
+                        resultImage[j, i] = new RGB(255, 255, 255);
                     }
                     else
                     {
@@ -82,6 +84,47 @@ namespace ImageProcessingLibrary.Segmentation
                 }
             }
         }
+
+        public Point CropFace(Image<RGB> image)
+        {
+            int maxSum = 0;
+            int maxSumY = 0;
+
+            for (int y = 0; y < image.M; y++)
+            {
+                int sum = 0;
+                for (int x = 0; x < image.N; x++)
+                {
+                    sum += (byte)image[x, y].R;
+                }
+
+                if (sum > maxSum)
+                {
+                    maxSum = sum;
+                    maxSumY = y;
+                }
+            }
+
+            maxSum = 0;
+            int maxSumX = 0;
+
+            for (int x = 0; x < image.N; x++)
+            {
+                int sum = 0;
+                for (int y = 0; y < image.M; y++)
+                {
+                    sum += (byte)image[x, y].R;
+                }
+                if (sum > maxSum)
+                {
+                    maxSum = sum;
+                    maxSumX = x;
+                }
+            }
+
+            return new Point(maxSumX, maxSumY);
+        }
+
 
         private void YCbCbCrCalculateCbCr(RGB pixel, out double cb, out double cr)
         {

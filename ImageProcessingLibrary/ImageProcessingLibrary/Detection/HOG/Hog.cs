@@ -112,7 +112,7 @@ namespace ImageProcessingLibrary.Detection.HOG
                     for (int x = 2; x < currentImage.N - 32;  x += 4)
                     {
                         var predictionResult = Predict(currentImage, x, y);
-                        if (predictionResult > 1)
+                        if (predictionResult > 1.1)
                         {
                             int xScaled = (int)(x * Math.Pow(scale, i));
                             var predictionRectangle = new PredictionRectangle();
@@ -124,18 +124,51 @@ namespace ImageProcessingLibrary.Detection.HOG
                 }
             }
 
-            var max = rectangles.Max(x => x.prediction);
+            //var max = rectangles.Max(x => x.prediction);
 
-            return rectangles.Where(x => x.prediction > max / 1.5 && x.prediction < max).ToList();
+            //return NonMaximaSuppression(rectangles.Where(x => x.prediction > max / 1.4 && x.prediction < max).ToList());
+            return NonMaximaSuppression(rectangles);
         }
-        //parall this tasks
-        public void TaskMethod(Image<Gray> image )
+
+        private List<PredictionRectangle> NonMaximaSuppression(List<PredictionRectangle> inputRectangles)
         {
-            //rescale
+            List<PredictionRectangle> pick = new List<PredictionRectangle>();
+            List<PredictionRectangle> suppressions = new List<PredictionRectangle>();
 
-            //predict cicle -> rectangles
+            inputRectangles.Sort((x, y) => y.rectangle.Y + y.rectangle.Height - (x.rectangle.Y + x.rectangle.Height));
 
-            //clasterization -> less number of rectangles            
+            while (inputRectangles.Count > 0)
+            {
+                var last = inputRectangles[inputRectangles.Count - 1];
+                pick.Add(last);
+                suppressions.Add(last);
+
+                for (int i = 0; i < inputRectangles.Count; i++)
+                {
+                    var x1 = Math.Max(last.rectangle.X, inputRectangles[i].rectangle.X);
+                    var y1 = Math.Max(last.rectangle.Y, inputRectangles[i].rectangle.Y);
+                    var x2 = Math.Min(last.rectangle.X + last.rectangle.Width,
+                        inputRectangles[i].rectangle.X + inputRectangles[i].rectangle.Width);
+                    var y2 = Math.Min(last.rectangle.Y + last.rectangle.Height,
+                        inputRectangles[i].rectangle.Y + inputRectangles[i].rectangle.Height);
+
+                    var width = Math.Max(0, x2 - x1 + 1);
+                    var height = Math.Max(0, y2 - y1 + 1);
+
+                    var overlap = (double) (width*height)/
+                                  (inputRectangles[i].rectangle.Width*inputRectangles[i].rectangle.Height);
+
+                    if (overlap > 0.4)
+                    {
+                        suppressions.Add(inputRectangles[i]);
+                    }
+                }
+
+                inputRectangles.RemoveAll(x => suppressions.Contains(x));
+                suppressions.Clear();
+            }
+
+            return pick;
         }
 
 

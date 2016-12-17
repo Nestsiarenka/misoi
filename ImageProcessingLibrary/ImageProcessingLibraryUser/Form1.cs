@@ -70,9 +70,20 @@ namespace ImageProcessingLibraryUser
             pictureBox.Refresh();
         }
 
-        private void DrawImage(Image<RGB> image, PictureBox pictureBox)
+        private void DrawImage(Image<RGB> image, PictureBox pictureBox, Point point = new Point())
         {
             var bitmap = Converter.ToBitmap(image);
+
+            if (!point.IsEmpty)
+            {
+                using (Graphics gr = Graphics.FromImage(bitmap))
+                {
+                    using (Pen thick_pen = new Pen(Color.Blue, 5))
+                    {
+                        gr.DrawRectangle(thick_pen, point.X - 2, point.Y - 2, 2, 2);
+                    }
+                }
+            }
 
             pictureBox.Image?.Dispose();
             pictureBox.Image = bitmap;
@@ -187,9 +198,9 @@ namespace ImageProcessingLibraryUser
             SkinColorSegmentation segmentator = new SkinColorSegmentation();
 
             var image = segmentator.Segmentate(_inputImage);
-            _outputImageGrayLevel = new RGBtoGrayFilter().Filter(image);
 
-            DrawImage(_outputImageGrayLevel, OutputPictureBox);
+            DrawHistagram(new Histogram(new RGBtoGrayFilter().Filter(image)), OutputHistogram);
+            DrawImage(image, OutputPictureBox);
         }
     }
 }
