@@ -76,10 +76,10 @@ namespace ImageProcessingLibrary.Detection.HOG
             public double prediction { get; set; }
         }
 
-        private List<PredictionRectangle> NonMaximaSupression(List<PredictionRectangle> srcRectangels, double trashHold)
-        {
+        //private List<PredictionRectangle> NonMaximaSupression(List<PredictionRectangle> srcRectangels, double trashHold)
+        //{
 
-        }
+        //}
 
         public List<PredictionRectangle> FindFaces (Image<Gray> image)
         {
@@ -102,8 +102,7 @@ namespace ImageProcessingLibrary.Detection.HOG
             for (int i = 0; i < scaledImages.Count; i++)
             { 
                 int windowSizeScaled = (int)(32 * Math.Pow(scale, i));
-                var rectanglesTemp = new List<PredictionRectangle>();
-
+               
                 Image<Gray> currentImage = scaledImages[i];
 
                 for (int y = 2; y < currentImage.M - 32; y += 4)
@@ -119,11 +118,10 @@ namespace ImageProcessingLibrary.Detection.HOG
                             var predictionRectangle = new PredictionRectangle();
                             predictionRectangle.prediction = predictionResult;
                             predictionRectangle.rectangle = new Rectangle(xScaled, yScaled, windowSizeScaled, windowSizeScaled);
-                            rectanglesTemp.Add(predictionRectangle);
+                            rectangles.Add(predictionRectangle);
                         }                       
                     }
                 }
-                rectanglesTemp.Sort();
             }
 
             var max = rectangles.Max(x => x.prediction);

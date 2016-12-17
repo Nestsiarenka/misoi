@@ -81,7 +81,7 @@ namespace TestConsole
 
             Hog hog = Hog.Load("D:\\images\\examples\\file1.xml");
             var rgbToGrayFilter = new RGBtoGrayFilter();
-            var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(@"D:\Images\examples\data\test_scenes\test_jpg\judybats.jpg"));
+            var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(@"D:\Images\examples\data\test_scenes\test_jpg\cards-perp-sml.jpg"));
 
             var bitmap = Converter.ToBitmap(image);
             var faces = hog.FindFaces(image);
@@ -100,7 +100,7 @@ namespace TestConsole
                 }                
             }
 
-            newBitmap.Save(@"D:\Images\examples\faces.jpg");
+            newBitmap.Save(@"D:\Images\examples\faces10.jpg");
 
             Console.WriteLine("Done!!!");
         }

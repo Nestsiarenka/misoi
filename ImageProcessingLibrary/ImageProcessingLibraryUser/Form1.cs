@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -9,7 +10,9 @@ using ImageProcessingLibrary.Filters.SpatialFilters;
 using ImageProcessingLibrary.Images;
 using ImageProcessingLibrary.Interfaces;
 using ImageProcessingLibrary.Resizers;
+using ImageProcessingLibrary.Segmentation;
 using ImageProcessingLibrary.Utilities;
+using ImageProcessingLibrary.Utilities.Enums;
 using ImageProcessingLibraryUser.Properties;
 
 
@@ -58,6 +61,16 @@ namespace ImageProcessingLibraryUser
         }
 
         private void DrawImage(Image<Gray> image, PictureBox pictureBox)
+        {
+            var bitmap = Converter.ToBitmap(image);
+
+            pictureBox.Image?.Dispose();
+            pictureBox.Image = bitmap;
+
+            pictureBox.Refresh();
+        }
+
+        private void DrawImage(Image<RGB> image, PictureBox pictureBox)
         {
             var bitmap = Converter.ToBitmap(image);
 
@@ -167,6 +180,16 @@ namespace ImageProcessingLibraryUser
 
                 DrawImage(image, InputPictureBox);
             }
+        }
+
+        private void SkinSegment_Click(object sender, EventArgs e)
+        {
+            SkinColorSegmentation segmentator = new SkinColorSegmentation();
+
+            var image = segmentator.Segmentate(_inputImage);
+            _outputImageGrayLevel = new RGBtoGrayFilter().Filter(image);
+
+            DrawImage(_outputImageGrayLevel, OutputPictureBox);
         }
     }
 }

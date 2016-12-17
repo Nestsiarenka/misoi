@@ -49,6 +49,7 @@
             this.pxLabel = new System.Windows.Forms.Label();
             this.pxLabel1 = new System.Windows.Forms.Label();
             this.ResizeButton = new System.Windows.Forms.Button();
+            this.SkinSegment = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.InputPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.OutputPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InputHistogram)).BeginInit();
@@ -223,11 +224,23 @@
             this.ResizeButton.UseVisualStyleBackColor = true;
             this.ResizeButton.Click += new System.EventHandler(this.ResizeButton_Click);
             // 
+            // SkinSegment
+            // 
+            this.SkinSegment.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SkinSegment.Location = new System.Drawing.Point(940, 667);
+            this.SkinSegment.Name = "SkinSegment";
+            this.SkinSegment.Size = new System.Drawing.Size(172, 47);
+            this.SkinSegment.TabIndex = 16;
+            this.SkinSegment.Text = "Skin segmentatoin";
+            this.SkinSegment.UseVisualStyleBackColor = true;
+            this.SkinSegment.Click += new System.EventHandler(this.SkinSegment_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1124, 793);
+            this.Controls.Add(this.SkinSegment);
             this.Controls.Add(this.ResizeButton);
             this.Controls.Add(this.pxLabel1);
             this.Controls.Add(this.pxLabel);
@@ -275,6 +288,7 @@
         private System.Windows.Forms.Label pxLabel;
         private System.Windows.Forms.Label pxLabel1;
         private System.Windows.Forms.Button ResizeButton;
+        private System.Windows.Forms.Button SkinSegment;
     }
 }
 

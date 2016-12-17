@@ -80,6 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resizers\BicubicResizer.cs" />
     <Compile Include="Resizers\SeamCarving.cs" />
+    <Compile Include="Segmentation\SkinColorSegmentation.cs" />
     <Compile Include="Utilities\Converter.cs" />
     <Compile Include="Utilities\Enums\Channel.cs" />
     <Compile Include="Utilities\FileLoader.cs" />
