@@ -70,9 +70,11 @@
     <Compile Include="Filters\PointFilters\HistogramBasedFilters.cs" />
     <Compile Include="Filters\PointFilters\LogarithmOperation.cs" />
     <Compile Include="Filters\PointFilters\RGBtoGrayFilter.cs" />
+    <Compile Include="Filters\PointFilters\OtsuBinarization.cs" />
     <Compile Include="Filters\SpatialFilters\ConvolutionFilter.cs" />
     <Compile Include="Filters\SpatialFilters\GaussianFilter.cs" />
     <Compile Include="Filters\SpatialFilters\MedianFilter.cs" />
+    <Compile Include="Filters\SpatialFilters\SobelFilter.cs" />
     <Compile Include="Filters\SpatialFilters\SpatialFilter.cs" />
     <Compile Include="Images\Image.cs" />
     <Compile Include="Filters\PointFilters\PointFilter.cs" />

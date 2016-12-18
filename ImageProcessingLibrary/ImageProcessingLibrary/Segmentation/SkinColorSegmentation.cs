@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 using System.Drawing;
 using System.Linq;
@@ -84,45 +85,74 @@ namespace ImageProcessingLibrary.Segmentation
                 }
             }
         }
-
-        public Point CropFace(Image<RGB> image)
+        
+        public Rectangle CropFace(Image<RGB> image, int widthProportion, int heightProportion)
         {
-            int maxSum = 0;
-            int maxSumY = 0;
+            var xHisto = new int[image.N];
+            var yHisto = new int[image.M];
 
             for (int y = 0; y < image.M; y++)
             {
-                int sum = 0;
                 for (int x = 0; x < image.N; x++)
                 {
-                    sum += (byte)image[x, y].R;
-                }
-
-                if (sum > maxSum)
-                {
-                    maxSum = sum;
-                    maxSumY = y;
+                    yHisto[y] += (byte)image[x, y].R;
                 }
             }
-
-            maxSum = 0;
-            int maxSumX = 0;
-
             for (int x = 0; x < image.N; x++)
             {
                 int sum = 0;
                 for (int y = 0; y < image.M; y++)
                 {
-                    sum += (byte)image[x, y].R;
-                }
-                if (sum > maxSum)
-                {
-                    maxSum = sum;
-                    maxSumX = x;
+                    xHisto[x] += (byte) image[x, y].R;
                 }
             }
 
-            return new Point(maxSumX, maxSumY);
+            var xHistoRegions = CalculateHisto(xHisto, heightProportion * 255 , widthProportion);
+            var yHistoRegions = CalculateHisto(yHisto, widthProportion * 255, heightProportion);
+
+            if (xHistoRegions.Count != 0 && yHistoRegions.Count != 0)
+            {
+                xHistoRegions.Sort((a, b) => (b[1] - b[0]) - (a[1] - a[0]));
+                yHistoRegions.Sort((a, b) => (b[1] - b[0]) - (a[1] - a[0]));
+
+                var x1 = xHistoRegions[0][0];
+                var x2 = xHistoRegions[0][1];
+                var y1 = yHistoRegions[0][0];
+                var y2 = yHistoRegions[0][1];
+                
+                return new Rectangle(x1, y1, x2 - x1, y2 - y1);
+            }
+
+            return new Rectangle();
+        }
+
+        private List<int[]> CalculateHisto(int[] histo, int minHistoHeight, int minHistoWidth)
+        {
+            var regions = new List<int[]>();
+            int begin = 0;
+
+            for (int i = 0; i < histo.Length; i++)
+            {
+                if (histo[i] >= minHistoHeight && begin == 0)
+                {
+                    begin = i;
+                }
+
+                if (histo[i] < minHistoHeight && begin != 0 || i == histo.Length - 1)
+                {
+                    if (i - begin >= minHistoWidth)
+                    {
+                        regions.Add(new[] { begin, i });
+                        begin = i;
+                    }
+                    else
+                    {
+                        begin = i;
+                    }
+                }
+            }
+
+            return regions;
         }
 
 

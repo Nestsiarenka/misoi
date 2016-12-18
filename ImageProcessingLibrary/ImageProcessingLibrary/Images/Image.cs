@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using ImageProcessingLibrary.Capacities.Interface;
 using ImageProcessingLibrary.Exceptions;
@@ -10,6 +11,8 @@ namespace ImageProcessingLibrary.Images
     where T : struct, ICapacity
     {
         private readonly T[][] _imageMatrix;
+        private int startingX = 0;
+        private int startingY = 0;
         
 
         public T this[int i, int j]
@@ -24,9 +27,9 @@ namespace ImageProcessingLibrary.Images
                     return zeroValue;
                 }
 
-                return _imageMatrix[j][i];
+                return _imageMatrix[startingY + j][startingX + i];
             }
-            set { _imageMatrix[j][i] = value; }
+            set { _imageMatrix[startingY + j][startingX + i] = value; }
         }
 
         public int Count => N * M;
@@ -105,6 +108,15 @@ namespace ImageProcessingLibrary.Images
             var clonedImage = new Image<T>((T[][])_imageMatrix.Clone(), N, M);
 
             return clonedImage;
+        }
+
+        public void SetRegionOfInterest(Rectangle rect)
+        {
+            startingX = rect.X;
+            startingY = rect.Y;
+
+            N = rect.Width;
+            M = rect.Height;
         }
     }
 }

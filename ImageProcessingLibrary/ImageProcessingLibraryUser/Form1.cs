@@ -70,17 +70,17 @@ namespace ImageProcessingLibraryUser
             pictureBox.Refresh();
         }
 
-        private void DrawImage(Image<RGB> image, PictureBox pictureBox, Point point = new Point())
+        private void DrawImage(Image<RGB> image, PictureBox pictureBox, Rectangle region = new Rectangle())
         {
             var bitmap = Converter.ToBitmap(image);
 
-            if (!point.IsEmpty)
+            if (!region.IsEmpty)
             {
                 using (Graphics gr = Graphics.FromImage(bitmap))
                 {
                     using (Pen thick_pen = new Pen(Color.Blue, 5))
                     {
-                        gr.DrawRectangle(thick_pen, point.X - 2, point.Y - 2, 2, 2);
+                        gr.DrawRectangle(thick_pen, region);
                     }
                 }
             }
@@ -114,6 +114,8 @@ namespace ImageProcessingLibraryUser
             FiltersComboBox.Items.Insert(1, "Log + FSHS");
             FiltersComboBox.Items.Insert(2, "Gaussian");
             FiltersComboBox.Items.Insert(3, "Median");
+            FiltersComboBox.Items.Insert(4, "Sobel");
+            FiltersComboBox.Items.Insert(5, "Otsu");
 
             FiltersComboBox.SelectedIndex = 0;
         }
@@ -159,6 +161,12 @@ namespace ImageProcessingLibraryUser
                 case 3:
                     filter = new MedianFilter(new bool[3,3]);
                     break;
+                case 4:
+                    filter = new SobelFilter();
+                    break;
+                case 5:
+                    filter = new OtsuBinarization();
+                    break;
                 default:
                     return;
             }
@@ -198,9 +206,18 @@ namespace ImageProcessingLibraryUser
             SkinColorSegmentation segmentator = new SkinColorSegmentation();
 
             var image = segmentator.Segmentate(_inputImage);
+            var region = segmentator.CropFace(image, _inputImage.N/3, _inputImage.M/3);
 
-            DrawHistagram(new Histogram(new RGBtoGrayFilter().Filter(image)), OutputHistogram);
-            DrawImage(image, OutputPictureBox);
+            image = _inputImage.Clone();
+            image.SetRegionOfInterest(region);
+
+            var grayImage = new RGBtoGrayFilter().Filter(image);
+            var medianImage = new MedianFilter(new bool[5,5]).Filter(grayImage);
+            var gauss = new GaussianFilter().Filter(medianImage);
+            var binaryImage = new OtsuBinarization().Filter(gauss);
+            var sobeledImage = new SobelFilter().Filter(binaryImage);
+
+            DrawImage(sobeledImage, OutputPictureBox);
         }
     }
 }

@@ -10,9 +10,14 @@ namespace ImageProcessingLibrary.Filters.PointFilters
     {
         protected Histogram _histogram;
 
+        protected virtual Histogram HistogramCreation(Image<Gray> image)
+        {
+            return new Histogram(image);
+        }
+
         public override Image<U> Filter(Image<Gray> image)
         {
-            _histogram = new Histogram(image);
+            _histogram = HistogramCreation(image);
 
             return base.Filter(image);
         }
