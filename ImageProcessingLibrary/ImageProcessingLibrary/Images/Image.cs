@@ -29,7 +29,12 @@ namespace ImageProcessingLibrary.Images
 
                 return _imageMatrix[startingY + j][startingX + i];
             }
-            set { _imageMatrix[startingY + j][startingX + i] = value; }
+            set {
+                if (!(ReturnZeroIfOutOfBounds && (j < 0 || j >= M || i < 0 || i >= N)))
+                {                    _imageMatrix[startingY + j][startingX + i] = value;
+
+                }
+            }
         }
 
         public int Count => N * M;
@@ -106,11 +111,27 @@ namespace ImageProcessingLibrary.Images
         public Image<T> Clone()
         {
             var clonedImage = new Image<T>((T[][])_imageMatrix.Clone(), N, M);
+            clonedImage.startingX = startingX;
+            clonedImage.startingY = startingY;
 
             return clonedImage;
         }
 
         public void SetRegionOfInterest(Rectangle rect)
+        {
+            startingX += rect.X;
+            startingY += rect.Y;
+
+            N = rect.Width;
+            M = rect.Height;
+        }
+
+        public Rectangle GetRegionOfInterest()
+        {
+            return new Rectangle(startingX, startingY, N, M);
+        }
+
+        public void ResetRegionOfInterest(Rectangle rect)
         {
             startingX = rect.X;
             startingY = rect.Y;

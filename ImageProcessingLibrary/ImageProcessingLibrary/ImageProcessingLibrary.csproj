@@ -62,6 +62,7 @@
     <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\SMO\SMO.cs" />
     <Compile Include="Classifiers\SVM\SvmTrainingAlghoritms\SMO\SMOTrainingData.cs" />
     <Compile Include="Classifiers\SVM\TrainingData.cs" />
+    <Compile Include="Detection\CannyEdge\CannyEdgeDetection.cs" />
     <Compile Include="Detection\HOG\Hog.cs" />
     <Compile Include="Exceptions\CapacityException.cs" />
     <Compile Include="Exceptions\ConverterException.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Filters\SpatialFilters\ConvolutionFilter.cs" />
     <Compile Include="Filters\SpatialFilters\GaussianFilter.cs" />
     <Compile Include="Filters\SpatialFilters\MedianFilter.cs" />
+    <Compile Include="Filters\SpatialFilters\RealGaussianFilter.cs" />
     <Compile Include="Filters\SpatialFilters\SobelFilter.cs" />
     <Compile Include="Filters\SpatialFilters\SpatialFilter.cs" />
     <Compile Include="Images\Image.cs" />

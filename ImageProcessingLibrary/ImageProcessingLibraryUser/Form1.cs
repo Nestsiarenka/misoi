@@ -5,6 +5,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using ImageProcessingLibrary.Capacities.Structures;
+using ImageProcessingLibrary.Detection.CannyEdge;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.Filters.SpatialFilters;
 using ImageProcessingLibrary.Images;
@@ -116,6 +117,7 @@ namespace ImageProcessingLibraryUser
             FiltersComboBox.Items.Insert(3, "Median");
             FiltersComboBox.Items.Insert(4, "Sobel");
             FiltersComboBox.Items.Insert(5, "Otsu");
+            FiltersComboBox.Items.Insert(6, "Real gaussian");
 
             FiltersComboBox.SelectedIndex = 0;
         }
@@ -167,6 +169,9 @@ namespace ImageProcessingLibraryUser
                 case 5:
                     filter = new OtsuBinarization();
                     break;
+                case 6:
+                    filter = new RealGaussianFilter(1);
+                    break;
                 default:
                     return;
             }
@@ -211,13 +216,22 @@ namespace ImageProcessingLibraryUser
             image = _inputImage.Clone();
             image.SetRegionOfInterest(region);
 
-            var grayImage = new RGBtoGrayFilter().Filter(image);
-            var medianImage = new MedianFilter(new bool[5,5]).Filter(grayImage);
-            var gauss = new GaussianFilter().Filter(medianImage);
-            var binaryImage = new OtsuBinarization().Filter(gauss);
-            var sobeledImage = new SobelFilter().Filter(binaryImage);
-
-            DrawImage(sobeledImage, OutputPictureBox);
+            var mouthRegion = segmentator.SegmentateLips(image);
+            //var grayFilter = new RGBtoGrayFilter();
+            //var grayImage = grayFilter.Filter(_inputImage);
+            //grayImage.SetRegionOfInterest(mouthRegion);
+            //var grayImage = segmentator.SegmentateLips(image);
+            //grayImage.SetRegionOfInterest(new Rectangle(grayImage.N / 4, grayImage.M / 2, grayImage.N / 2, grayImage.M / 2));
+            ////var medianImage = new MedianFilter(new bool[5, 5]).Filter(grayImage);
+            ////var gauss = new GaussianFilter().Filter(medianImage);
+            //var otsu = new OtsuBinarization().Filter(grayImage);
+            //var soble = new SobelFilter().Filter(otsu);
+            //////image.SetRegionOfInterest(mouthRegion);
+            //var detector = new CannyEdgeDetection();
+            
+            //grayImage = detector.MakeDetection(grayImage);
+                
+            DrawImage(image, OutputPictureBox, mouthRegion);
         }
     }
 }

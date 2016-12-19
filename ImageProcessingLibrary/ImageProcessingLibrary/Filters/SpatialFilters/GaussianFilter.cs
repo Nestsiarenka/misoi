@@ -8,7 +8,7 @@ namespace ImageProcessingLibrary.Filters.SpatialFilters
 {
     public class GaussianFilter : ConvolutionFilter
     {
-        public GaussianFilter() : base(new [,] { { -1, -1, -1}, { -1, 9, -1}, { -1, -1, -1} })
+        public GaussianFilter() : base(new double[ ,] { { -1, -1, -1}, { -1, 9, -1}, { -1, -1, -1} })
         {
         }
     }

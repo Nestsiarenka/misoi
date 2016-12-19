@@ -12,14 +12,14 @@ namespace ImageProcessingLibrary.Filters.SpatialFilters
 
     public class ConvolutionFilter : SpatialFilter<Gray, Gray>
     {
-        private readonly int[,] _convolutionMatrix;
-        private readonly int _divisor;
+        private readonly double[,] _convolutionMatrix;
+        private readonly double _divisor;
         private readonly int _kernelWidth;
         private readonly int _kernelHeight;
         private readonly int _widthOffset;
         private readonly int _heightOffset;
 
-        public ConvolutionFilter(int[,] convolutionMatrix)
+        public ConvolutionFilter(double[,] convolutionMatrix)
         {
             if (convolutionMatrix == null)
             {
@@ -63,13 +63,13 @@ namespace ImageProcessingLibrary.Filters.SpatialFilters
         protected override Gray ProcessPixel(int i, int j, Image<Gray> image)
         {
             Gray resultGray = new Gray();
-            int convolutionValue = 0;
+            double convolutionValue = 0;
 
             for (int x = 0; x < _kernelHeight; x++)
             {
                 for (int y = 0; y < _kernelWidth; y++)
                 {
-                    convolutionValue += (int)image[i - _widthOffset + y, j - _heightOffset + x].G *
+                    convolutionValue += (double)image[i - _widthOffset + y, j - _heightOffset + x].G *
                                         _convolutionMatrix[x, y];
                 }
             }
