@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using ImageProcessingLibrary.Detection.HOG;
 using ImageProcessingLibrary.Filters.PointFilters;
+using ImageProcessingLibrary.NeuralNetwork;
 using ImageProcessingLibrary.Utilities;
 
 namespace TestConsole
@@ -79,28 +80,49 @@ namespace TestConsole
             //var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile("D:\\Images\\examples\\true\\1.jpg"));
             //var vector1 = new Hog(32, 32).ComputeHogDescriptor(image, 2, 2);
 
-            Hog hog = Hog.Load("D:\\images\\examples\\file1.xml");
-            var rgbToGrayFilter = new RGBtoGrayFilter();
-            var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(@"D:\Images\examples\1.jpg"));
+            //Hog hog = Hog.Load("D:\\images\\examples\\file1.xml");
+            //var rgbToGrayFilter = new RGBtoGrayFilter();
+            //var image = rgbToGrayFilter.Filter(FileLoader.LoadFromFile(@"D:\Images\examples\1.jpg"));
 
-            var bitmap = Converter.ToBitmap(image);
-            var faces = hog.FindFaces(image);
+            //var bitmap = Converter.ToBitmap(image);
+            //var faces = hog.FindFaces(image);
 
-            var newBitmap = new Bitmap(bitmap.Width, bitmap.Height);
+            //var newBitmap = new Bitmap(bitmap.Width, bitmap.Height);
 
-            using (Graphics gr = Graphics.FromImage(newBitmap))
+            //using (Graphics gr = Graphics.FromImage(newBitmap))
+            //{
+            //    gr.DrawImage(bitmap, 0, 0);
+            //    foreach (var item in faces)
+            //    {
+            //        using (Pen thick_pen = new Pen(Color.Blue, 5))
+            //        {
+            //            gr.DrawRectangle(thick_pen, item.rectangle);
+            //        }
+            //    }
+            //}
+
+            //newBitmap.Save(@"D:\Images\examples\faces13.jpg");
+
+            NeuralNetwork neuralNetwork = new NeuralNetwork(new[] {5, 3, 2}, 0.3f, 0.3f);
+
+            float[][] trainingSet = new float[3][];
+            float[][] expectedResultes = new float[3][];
+
+            trainingSet[0] = new[] {1.0f, 2.0f, 3.0f};
+            trainingSet[1] = new[] { 4.0f, 5.0f, 6.0f };
+            trainingSet[2] = new[] { 7.0f, 8.0f, 9.0f };
+
+            expectedResultes[0] = new[] {1.0f, 0};
+            expectedResultes[1] = new[] { 0, 1.0f};
+            expectedResultes[2] = new[] { 1.0f, 0};
+
+            neuralNetwork.Train(trainingSet, expectedResultes);
+
+            for (int i = 1; i < 10; i++)
             {
-                gr.DrawImage(bitmap, 0, 0);
-                foreach (var item in faces)
-                {
-                    using (Pen thick_pen = new Pen(Color.Blue, 5))
-                    {
-                        gr.DrawRectangle(thick_pen, item.rectangle);
-                    }
-                }
+                var result = neuralNetwork.Compute(trainingSet[i%3]);
+                Console.WriteLine("For {0} is {1} {2}", i, result[0], result[1]);
             }
-
-            newBitmap.Save(@"D:\Images\examples\faces13.jpg");
 
             Console.WriteLine("Done!!!");
             Console.ReadLine();
