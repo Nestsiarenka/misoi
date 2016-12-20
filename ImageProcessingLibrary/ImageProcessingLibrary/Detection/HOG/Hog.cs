@@ -124,10 +124,10 @@ namespace ImageProcessingLibrary.Detection.HOG
                 }
             }
 
-            //var max = rectangles.Max(x => x.prediction);
+            var max = rectangles.Max(x => x.prediction);
 
-            //return NonMaximaSuppression(rectangles.Where(x => x.prediction > max / 1.4 && x.prediction < max).ToList());
-            return NonMaximaSuppression(rectangles);
+            return NonMaximaSuppression(rectangles.Where(x => x.prediction > max / 1.4 && x.prediction < max).ToList());
+            //return NonMaximaSuppression(rectangles);
         }
 
         private List<PredictionRectangle> NonMaximaSuppression(List<PredictionRectangle> inputRectangles)

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
@@ -14,7 +13,6 @@ using ImageProcessingLibrary.Interfaces;
 using ImageProcessingLibrary.Resizers;
 using ImageProcessingLibrary.Segmentation;
 using ImageProcessingLibrary.Utilities;
-using ImageProcessingLibrary.Utilities.Enums;
 using ImageProcessingLibraryUser.Properties;
 
 
