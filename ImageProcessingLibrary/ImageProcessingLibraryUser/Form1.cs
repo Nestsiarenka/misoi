@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using ImageProcessingLibrary.Capacities.Structures;
@@ -235,26 +236,98 @@ namespace ImageProcessingLibraryUser
 
             image = _inputImage.Clone();
             image.SetRegionOfInterest(region);
-
-            //var mouthRegion = segmentator.SegmentateLips(image);
-            var eyesRegions = segmentator.SegmentateEyes(image);
-            eyesRegions.Add(segmentator.SegmentateLips(image));
-            //var grayFilter = new RGBtoGrayFilter();
-            //var grayImage = grayFilter.Filter(_inputImage);
-            //grayImage.SetRegionOfInterest(mouthRegion);
-            //var grayImage = segmentator.SegmentateLips(image);
-            //grayImage.SetRegionOfInterest(new Rectangle(grayImage.N / 4, grayImage.M / 2, grayImage.N / 2, grayImage.M / 2));
-            ////var medianImage = new MedianFilter(new bool[5, 5]).Filter(grayImage);
-            ////var gauss = new GaussianFilter().Filter(medianImage);
-            //var otsu = new OtsuBinarization().Filter(grayImage);
-            //var soble = new SobelFilter().Filter(otsu);
-            //////image.SetRegionOfInterest(mouthRegion);
-            //var detector = new CannyEdgeDetection();
+            BicubicResizer bicubicResizer = new BicubicResizer();
+            var grayImage = bicubicResizer.Resize(new RGBtoGrayFilter().Filter(image), 60, 120);
             
-            //grayImage = detector.MakeDetection(grayImage);
-                
-            DrawImage(image, OutputPictureBox, eyesRegions);
+            var regions = segmentator.SegmentateEyes(grayImage);
+            regions.Add(segmentator.SegmentateLips(grayImage));
+
+            var eye1 = grayImage.Clone();
+            eye1.SetRegionOfInterest(regions[0]);
+
+            var eye2 = grayImage.Clone();
+            eye2.SetRegionOfInterest(regions[1]);
+
+            var lips = grayImage.Clone();
+            lips.SetRegionOfInterest(regions[2]);
+
+            var eye1Histo = new float[20];
+            var eye2Histo = new float[20];
+            var lipsHistoM = new float[20];
+            var lipsHistoN = new float[20];
+
+            OtsuBinarization binarizator = new OtsuBinarization();
+
+            eye1 = binarizator.Filter(eye1);
+            eye2 = binarizator.Filter(eye2);
+            lips = binarizator.Filter(lips);
+
+            for (int x = 0; x < 10; x++)
+            {
+                if (eye1.N <= x + eye2.N / 2 - 5 || x + eye1.N / 2 - 5 < 0)
+                {
+                    eye1Histo[x] = 0;
+                    continue;
+                }
+
+                for (int y = 0; y < eye1.M; y++)
+                {
+                    eye1Histo[x] += eye1[x + eye1.N/2 - 5, y].G.Value;
+                }
+            }
+
+            for (int x = 0; x < 10; x++)
+            {
+                if (eye2.N <= x + eye2.N / 2 - 5 || x + eye2.N / 2 - 5 < 0)
+                {
+                    eye2Histo[x] = 0;
+                    continue;
+                }    
+
+                for (int y = 0; y < eye2.M; y++)
+                {
+                    eye2Histo[x] += eye2[x + eye2.N / 2 - 5, y].G.Value;
+                }
+            }
+
+            for (int x = 0; x < 10; x++)
+            {
+                if (lips.N <= x + lips.N / 2 - 5 || x + lips.N / 2 - 5 < 0)
+                {
+                    lipsHistoN[x] = 0;
+                    continue;
+                }
+
+                for (int y = 0; y < lips.M; y++)
+                {
+                    lipsHistoN[x] += lips[x + lips.N / 2 - 5, y].G.Value;
+                }
+            }
+
+            for (int y = 0; y < 10; y++)
+            {
+                if (lips.M <= y + lips.M / 2 - 5 ||  y + lips.M / 2 - 5 < 0)
+                {
+                    lipsHistoM[y] = 0;
+                    continue;
+                }
+
+                for (int x = 0; x < lips.M; x++)
+                {
+                    lipsHistoM[y] += lips[x, y + lips.M / 2 - 5].G.Value;
+                }
+            }
+
+
+
+            DrawImage(lips, OutputPictureBox);
         }
+
+        //private float Normalize()
+        //{
+            
+        //}
+
 
         private void CannysButton(object sender, EventArgs e)
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using ImageProcessingLibrary.Detection.HOG;
 using ImageProcessingLibrary.Filters.PointFilters;
 using ImageProcessingLibrary.NeuralNetwork;
+using ImageProcessingLibrary.Segmentation;
 using ImageProcessingLibrary.Utilities;
 
 namespace TestConsole
@@ -103,29 +104,52 @@ namespace TestConsole
 
             //newBitmap.Save(@"D:\Images\examples\faces13.jpg");
 
-            NeuralNetwork neuralNetwork = new NeuralNetwork(new[] {5, 3, 2}, 0.3f, 0.3f);
+            //NeuralNetwork neuralNetwork = new NeuralNetwork(new[] {5, 3, 2}, 0.3f, 0.3f);
 
-            float[][] trainingSet = new float[3][];
-            float[][] expectedResultes = new float[3][];
+            //float[][] trainingSet = new float[3][];
+            //float[][] expectedResultes = new float[3][];
 
-            trainingSet[0] = new[] {1.0f, 2.0f, 3.0f};
-            trainingSet[1] = new[] { 4.0f, 5.0f, 6.0f };
-            trainingSet[2] = new[] { 7.0f, 8.0f, 9.0f };
+            //trainingSet[0] = new[] {1.0f, 2.0f, 3.0f};
+            //trainingSet[1] = new[] { 4.0f, 5.0f, 6.0f };
+            //trainingSet[2] = new[] { 7.0f, 8.0f, 9.0f };
 
-            expectedResultes[0] = new[] {1.0f, 0};
-            expectedResultes[1] = new[] { 0, 1.0f};
-            expectedResultes[2] = new[] { 1.0f, 0};
+            //expectedResultes[0] = new[] {1.0f, 0};
+            //expectedResultes[1] = new[] { 0, 1.0f};
+            //expectedResultes[2] = new[] { 1.0f, 0};
 
-            neuralNetwork.Train(trainingSet, expectedResultes);
+            //neuralNetwork.Train(trainingSet, expectedResultes);
 
-            for (int i = 1; i < 10; i++)
+            //for (int i = 1; i < 10; i++)
+            //{
+            //    var result = neuralNetwork.Compute(trainingSet[i%3]);
+            //    Console.WriteLine("For {0} is {1} {2}", i, result[0], result[1]);
+            //}
+
+            //Console.WriteLine("Done!!!");
+            //Console.ReadLine();
+
+            var falseExamplesFolderEnumeration = Directory.EnumerateFiles(@"c:\faces\sadnes");
+            int i = 0;
+            foreach (var paths in falseExamplesFolderEnumeration)
             {
-                var result = neuralNetwork.Compute(trainingSet[i%3]);
-                Console.WriteLine("For {0} is {1} {2}", i, result[0], result[1]);
-            }
+                SkinColorSegmentation segmentator = new SkinColorSegmentation();
 
-            Console.WriteLine("Done!!!");
-            Console.ReadLine();
+                var _inputImage = FileLoader.LoadFromFile(paths);
+                
+                var image = segmentator.Segmentate(_inputImage);
+                var region = segmentator.CropFace(image, _inputImage.N / 3, _inputImage.M / 3);
+
+                if (region.Height == 0 || region.Width == 0)
+                    continue;
+
+                _inputImage.SetRegionOfInterest(region);
+
+                
+                Bitmap bitmap = Converter.ToBitmap(_inputImage);
+                bitmap.Save(@"c:\save\" + i + ".jpg");
+
+                i++;
+            }
         }
     }
 }

@@ -87,14 +87,13 @@ namespace ImageProcessingLibrary.Segmentation
             }
         }
 
-        public List<Rectangle> SegmentateEyes(Image<RGB> image)
+        public List<Rectangle> SegmentateEyes(Image<Gray> grayImage)
         {
-            var grayImage = new RGBtoGrayFilter().Filter(image);
 
             var edgeDetection = new CannyEdgeDetection();
             var edgedImage = edgeDetection.MakeDetection(grayImage);
 
-            edgedImage.SetRegionOfInterest(new Rectangle(image.N * 1 / 10, image.M  * 8 / 40 , grayImage.N * 8 / 10, grayImage.M * 6 / 20));
+            edgedImage.SetRegionOfInterest(new Rectangle(grayImage.N * 1 / 10, grayImage.M  * 8 / 40 , grayImage.N * 8 / 10, grayImage.M * 6 / 20));
 
             var previousRegionOfInterest = edgedImage.GetRegionOfInterest();
 
@@ -119,9 +118,8 @@ namespace ImageProcessingLibrary.Segmentation
             return new List<Rectangle> {newRegionOfInterestLeft, newRegionOfInterestRight};
         }
 
-        public Rectangle SegmentateLips(Image<RGB> image)
+        public Rectangle SegmentateLips(Image<Gray> grayImage)
         {
-            var grayImage = new RGBtoGrayFilter().Filter(image);
             
             var edgeDetection = new CannyEdgeDetection();
             var edgedImage = edgeDetection.MakeDetection(grayImage);
