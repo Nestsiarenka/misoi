@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing;
 using System.IO;
@@ -80,6 +81,27 @@ namespace ImageProcessingLibraryUser
                 using (Graphics gr = Graphics.FromImage(bitmap))
                 {
                     using (Pen thick_pen = new Pen(Color.Blue, 5))
+                    {
+                        gr.DrawRectangle(thick_pen, region);
+                    }
+                }
+            }
+
+            pictureBox.Image?.Dispose();
+            pictureBox.Image = bitmap;
+
+            pictureBox.Refresh();
+        }
+
+        private void DrawImage(Image<RGB> image, PictureBox pictureBox, IEnumerable<Rectangle> regions)
+        {
+            var bitmap = Converter.ToBitmap(image);
+            
+            using (Graphics gr = Graphics.FromImage(bitmap))
+            {
+                using (Pen thick_pen = new Pen(Color.Blue, 5))
+                {
+                    foreach (var region in regions)
                     {
                         gr.DrawRectangle(thick_pen, region);
                     }
@@ -216,7 +238,9 @@ namespace ImageProcessingLibraryUser
             image = _inputImage.Clone();
             image.SetRegionOfInterest(region);
 
-            var mouthRegion = segmentator.SegmentateLips(image);
+            //var mouthRegion = segmentator.SegmentateLips(image);
+            var eyesRegions = segmentator.SegmentateEyes(image);
+            eyesRegions.Add(segmentator.SegmentateLips(image));
             //var grayFilter = new RGBtoGrayFilter();
             //var grayImage = grayFilter.Filter(_inputImage);
             //grayImage.SetRegionOfInterest(mouthRegion);
@@ -231,7 +255,19 @@ namespace ImageProcessingLibraryUser
             
             //grayImage = detector.MakeDetection(grayImage);
                 
-            DrawImage(image, OutputPictureBox, mouthRegion);
+            DrawImage(image, OutputPictureBox, eyesRegions);
+        }
+
+        private void CannysButton(object sender, EventArgs e)
+        {
+            var grayFilter = new RGBtoGrayFilter();
+            var grayImage = grayFilter.Filter(_inputImage);
+
+            var detector = new CannyEdgeDetection();
+
+            grayImage = detector.MakeDetection(grayImage);
+
+            DrawImage(grayImage, OutputPictureBox);
         }
     }
 }

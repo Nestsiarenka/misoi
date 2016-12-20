@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea8 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Series series8 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.InputPictureBox = new System.Windows.Forms.PictureBox();
             this.OutputPictureBox = new System.Windows.Forms.PictureBox();
             this.InputHistogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -50,6 +50,7 @@
             this.pxLabel1 = new System.Windows.Forms.Label();
             this.ResizeButton = new System.Windows.Forms.Button();
             this.SkinSegment = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.InputPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.OutputPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.InputHistogram)).BeginInit();
@@ -76,30 +77,30 @@
             // 
             // InputHistogram
             // 
-            chartArea1.Name = "ChartArea1";
-            this.InputHistogram.ChartAreas.Add(chartArea1);
+            chartArea7.Name = "ChartArea1";
+            this.InputHistogram.ChartAreas.Add(chartArea7);
             this.InputHistogram.Location = new System.Drawing.Point(491, 26);
             this.InputHistogram.Name = "InputHistogram";
             this.InputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SemiTransparent;
-            series1.ChartArea = "ChartArea1";
-            series1.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
-            series1.Name = "Histogram";
-            this.InputHistogram.Series.Add(series1);
+            series7.ChartArea = "ChartArea1";
+            series7.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series7.Name = "Histogram";
+            this.InputHistogram.Series.Add(series7);
             this.InputHistogram.Size = new System.Drawing.Size(436, 361);
             this.InputHistogram.TabIndex = 2;
             this.InputHistogram.Text = "Histogram of input image";
             // 
             // OutputHistogram
             // 
-            chartArea2.Name = "ChartArea1";
-            this.OutputHistogram.ChartAreas.Add(chartArea2);
+            chartArea8.Name = "ChartArea1";
+            this.OutputHistogram.ChartAreas.Add(chartArea8);
             this.OutputHistogram.Location = new System.Drawing.Point(491, 419);
             this.OutputHistogram.Name = "OutputHistogram";
             this.OutputHistogram.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.SeaGreen;
-            series2.ChartArea = "ChartArea1";
-            series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
-            series2.Name = "Histogram";
-            this.OutputHistogram.Series.Add(series2);
+            series8.ChartArea = "ChartArea1";
+            series8.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.StepLine;
+            series8.Name = "Histogram";
+            this.OutputHistogram.Series.Add(series8);
             this.OutputHistogram.Size = new System.Drawing.Size(436, 361);
             this.OutputHistogram.TabIndex = 3;
             this.OutputHistogram.Text = "Histogram of output image";
@@ -231,15 +232,27 @@
             this.SkinSegment.Name = "SkinSegment";
             this.SkinSegment.Size = new System.Drawing.Size(172, 47);
             this.SkinSegment.TabIndex = 16;
-            this.SkinSegment.Text = "Skin segmentatoin";
+            this.SkinSegment.Text = "Face features";
             this.SkinSegment.UseVisualStyleBackColor = true;
             this.SkinSegment.Click += new System.EventHandler(this.SkinSegment_Click);
+            // 
+            // button1
+            // 
+            this.button1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.button1.Location = new System.Drawing.Point(940, 732);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(172, 47);
+            this.button1.TabIndex = 17;
+            this.button1.Text = "Canny\'s edges";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.CannysButton);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1124, 793);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.SkinSegment);
             this.Controls.Add(this.ResizeButton);
             this.Controls.Add(this.pxLabel1);
@@ -289,6 +302,7 @@
         private System.Windows.Forms.Label pxLabel1;
         private System.Windows.Forms.Button ResizeButton;
         private System.Windows.Forms.Button SkinSegment;
+        private System.Windows.Forms.Button button1;
     }
 }
 

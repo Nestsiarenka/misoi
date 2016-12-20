@@ -87,9 +87,36 @@ namespace ImageProcessingLibrary.Segmentation
             }
         }
 
-        public Rectangle SegmentateEyes(Image<RGB> image)
+        public List<Rectangle> SegmentateEyes(Image<RGB> image)
         {
+            var grayImage = new RGBtoGrayFilter().Filter(image);
+
+            var edgeDetection = new CannyEdgeDetection();
+            var edgedImage = edgeDetection.MakeDetection(grayImage);
+
+            edgedImage.SetRegionOfInterest(new Rectangle(image.N * 1 / 10, image.M  * 8 / 40 , grayImage.N * 8 / 10, grayImage.M * 6 / 20));
+
+            var previousRegionOfInterest = edgedImage.GetRegionOfInterest();
+
+            edgedImage.SetRegionOfInterest(new Rectangle(0, 0 , edgedImage.N / 2, edgedImage.M));
+
+            var eyeRegionLeft = ComputeRegion(edgedImage);
+            var oldRegionOfInterest = edgedImage.GetRegionOfInterest();
+
+            var newRegionOfInterestLeft = new Rectangle(oldRegionOfInterest.X + eyeRegionLeft.X, 
+                oldRegionOfInterest.Y + eyeRegionLeft.Y, 
+                eyeRegionLeft.Width, eyeRegionLeft.Height);
             
+            edgedImage.ResetRegionOfInterest(previousRegionOfInterest);
+            edgedImage.SetRegionOfInterest(new Rectangle(edgedImage.N / 2, 0, edgedImage.N / 2, edgedImage.M));
+            
+            var eyeRegionRight = ComputeRegion(edgedImage);
+            oldRegionOfInterest = edgedImage.GetRegionOfInterest();
+
+            var newRegionOfInterestRight = new Rectangle(oldRegionOfInterest.X + eyeRegionRight.X,
+                oldRegionOfInterest.Y + eyeRegionRight.Y,
+                eyeRegionLeft.Width, eyeRegionLeft.Height);
+            return new List<Rectangle> {newRegionOfInterestLeft, newRegionOfInterestRight};
         }
 
         public Rectangle SegmentateLips(Image<RGB> image)
@@ -113,142 +140,142 @@ namespace ImageProcessingLibrary.Segmentation
             //var sobeledImage = new OtsuBinarization().Filter(gauss);
             //var sobeledImage = new SobelFilter().Filter(binaryImage);
 
-            var xHisto = new int[edgedImage.N];
-            var yHisto = new int[edgedImage.M];
+            //var xHisto = new int[edgedImage.N];
+            //var yHisto = new int[edgedImage.M];
 
-            for (int x = 0; x < edgedImage.N; x++)
-            {
-                int sum = 0;
-                for (int y = 0; y < edgedImage.M; y++)
-                {
-                    xHisto[x] += (byte)edgedImage[x, y].G;
-                }
-            }
+            //for (int x = 0; x < edgedImage.N; x++)
+            //{
+            //    int sum = 0;
+            //    for (int y = 0; y < edgedImage.M; y++)
+            //    {
+            //        xHisto[x] += (byte)edgedImage[x, y].G;
+            //    }
+            //}
 
-            for (int y = 0; y < edgedImage.M; y++)
-            {
-                for (int x = 0; x < edgedImage.N; x++)
-                {
-                    yHisto[y] += (byte)edgedImage[x, y].G;
-                }
-            }
+            //for (int y = 0; y < edgedImage.M; y++)
+            //{
+            //    for (int x = 0; x < edgedImage.N; x++)
+            //    {
+            //        yHisto[y] += (byte)edgedImage[x, y].G;
+            //    }
+            //}
 
-            int xMax = 0;
-            List<int> maxIndexes = new List<int>();
+            //int xMax = 0;
+            //List<int> maxIndexes = new List<int>();
 
-            for (int i = 0; i < xHisto.Length; i++)
-            {
-                if (xHisto[i] > xMax)
-                {
-                    xMax = xHisto[i];
-                    maxIndexes.Clear();
-                    maxIndexes.Add(i);
-                }
-                else if (xHisto[i] == xMax)
-                {
-                    maxIndexes.Add(i);
-                }
-            }
+            //for (int i = 0; i < xHisto.Length; i++)
+            //{
+            //    if (xHisto[i] > xMax)
+            //    {
+            //        xMax = xHisto[i];
+            //        maxIndexes.Clear();
+            //        maxIndexes.Add(i);
+            //    }
+            //    else if (xHisto[i] == xMax)
+            //    {
+            //        maxIndexes.Add(i);
+            //    }
+            //}
 
-            xMax = (int)maxIndexes.Average();
+            //xMax = (int)maxIndexes.Average();
 
-            int[] d1 = new int[yHisto.Length];
-            int[] d2 = new int[yHisto.Length];
-            int[] d = new int[yHisto.Length];
+            //int[] d1 = new int[yHisto.Length];
+            //int[] d2 = new int[yHisto.Length];
+            //int[] d = new int[yHisto.Length];
 
-            for (int y = 1; y < yHisto.Length - 1; y++)
-            {
-                d1[y] = yHisto[y - 1] - yHisto[y];
-                d2[y] = yHisto[y] - yHisto[y + 1];
-                d[y] = yHisto[y] / 2;
-            }
+            //for (int y = 1; y < yHisto.Length - 1; y++)
+            //{
+            //    d1[y] = yHisto[y - 1] - yHisto[y];
+            //    d2[y] = yHisto[y] - yHisto[y + 1];
+            //    d[y] = yHisto[y] / 2;
+            //}
 
-            int[] w = new int[yHisto.Length];
+            //int[] w = new int[yHisto.Length];
 
-            for (int y = 1; y < yHisto.Length - 1; y++)
-            {
-                if (d1[y] < 0 || d2[y] < 0 && (d1[y] >= d[y] || d2[y] >= d[y]))
-                {
-                    w[y] = 0;
-                }
-                else
-                {
-                    w[y] = yHisto[y];
-                }
-            }
+            //for (int y = 1; y < yHisto.Length - 1; y++)
+            //{
+            //    if (d1[y] < 0 || d2[y] < 0 && (d1[y] >= d[y] || d2[y] >= d[y]))
+            //    {
+            //        w[y] = 0;
+            //    }
+            //    else
+            //    {
+            //        w[y] = yHisto[y];
+            //    }
+            //}
 
-            int yMax = 0;
+            //int yMax = 0;
 
-            for (int i = 0; i < yHisto.Length; i++)
-            {
-                if (w[i] > yMax)
-                {
-                    yMax = w[i];
-                    maxIndexes.Clear();
-                    maxIndexes.Add(i);
-                }
-                else if (w[i] == yMax)
-                {
-                    maxIndexes.Add(i);
-                }
-            }
+            //for (int i = 0; i < yHisto.Length; i++)
+            //{
+            //    if (w[i] > yMax)
+            //    {
+            //        yMax = w[i];
+            //        maxIndexes.Clear();
+            //        maxIndexes.Add(i);
+            //    }
+            //    else if (w[i] == yMax)
+            //    {
+            //        maxIndexes.Add(i);
+            //    }
+            //}
 
-            yMax = (int)maxIndexes.Average();
+            //yMax = (int)maxIndexes.Average();
 
 
-            int left = xMax, right = xMax;
-            for (int i = 0, x = xMax; i < xHisto.Length * 8 / 15; i++, x--)
-            {
-                if (x < 0)
-                {
-                    break;
-                }
+            //int left = xMax, right = xMax;
+            //for (int i = 0, x = xMax; i < xHisto.Length * 8 / 15; i++, x--)
+            //{
+            //    if (x < 0)
+            //    {
+            //        break;
+            //    }
 
-                if (xHisto[x] > 0)
-                {
-                    left = x;
-                }
-            }
+            //    if (xHisto[x] > 0)
+            //    {
+            //        left = x;
+            //    }
+            //}
 
-            for (int i = 0, x = xMax; i < xHisto.Length * 4 / 10; i++, x++)
-            {
-                if (x >= xHisto.Length)
-                {
-                    break;
-                }
+            //for (int i = 0, x = xMax; i < xHisto.Length * 4 / 10; i++, x++)
+            //{
+            //    if (x >= xHisto.Length)
+            //    {
+            //        break;
+            //    }
 
-                if (xHisto[x] > 0)
-                {
-                    right = x;
-                }
-            }
+            //    if (xHisto[x] > 0)
+            //    {
+            //        right = x;
+            //    }
+            //}
 
-            int bottom = yMax, top = yMax;
-            for (int i = 0, y = yMax; i < yHisto.Length * 4 / 10; i++, y--)
-            {
-                if (y < 0)
-                {
-                    break;
-                }
+            //int bottom = yMax, top = yMax;
+            //for (int i = 0, y = yMax; i < yHisto.Length * 4 / 10; i++, y--)
+            //{
+            //    if (y < 0)
+            //    {
+            //        break;
+            //    }
 
-                if (yHisto[y] > 0)
-                {
-                    top = y;
-                }
-            }
+            //    if (yHisto[y] > 0)
+            //    {
+            //        top = y;
+            //    }
+            //}
 
-            for (int i = 0, y = yMax; i < yHisto.Length * 4 / 10; i++, y++)
-            {
-                if (y >= yHisto.Length)
-                {
-                    break;
-                }
+            //for (int i = 0, y = yMax; i < yHisto.Length * 4 / 10; i++, y++)
+            //{
+            //    if (y >= yHisto.Length)
+            //    {
+            //        break;
+            //    }
 
-                if (xHisto[y] > 0)
-                {
-                    bottom = y;
-                }
-            }
+            //    if (xHisto[y] > 0)
+            //    {
+            //        bottom = y;
+            //    }
+            //}
 
             //do
             //{
@@ -273,9 +300,12 @@ namespace ImageProcessingLibrary.Segmentation
             //}
 
 
+
+            Rectangle mouthRegion = ComputeRegion(edgedImage);
+
             var oldInterestRegion = edgedImage.GetRegionOfInterest();
 
-            return new Rectangle(oldInterestRegion.X + left, oldInterestRegion.Y + top, right - left, bottom - top);
+            return new Rectangle(oldInterestRegion.X + mouthRegion.X, oldInterestRegion.Y + mouthRegion.Y, mouthRegion.Width, mouthRegion.Height);
             //return new Rectangle(oldInterestRegion.X + xMax, oldInterestRegion.Y + yMax,  3, 3);
         }
 
@@ -363,7 +393,6 @@ namespace ImageProcessingLibrary.Segmentation
 
             yMax = (int)maxIndexes.Average();
 
-
             int left = xMax, right = xMax;
             for (int i = 0, x = xMax; i < xHisto.Length * 8 / 15; i++, x--)
             {
@@ -412,12 +441,13 @@ namespace ImageProcessingLibrary.Segmentation
                     break;
                 }
 
-                if (xHisto[y] > 0)
+                if (yHisto[y] > 0)
                 {
                     bottom = y;
                 }
             }
-            return new Rectangle(left, top, right - left, top - bottom);
+            
+            return new Rectangle(left, top, right - left, bottom - top);
         }
         
         public Rectangle CropFace(Image<RGB> image, int widthProportion, int heightProportion)

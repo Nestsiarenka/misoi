@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Windows.Forms.Design;
 using ImageProcessingLibrary.Capacities.Structures;
 using ImageProcessingLibrary.Filters.SpatialFilters;
 using ImageProcessingLibrary.Images;
-using ImageProcessingLibrary.Utilities;
 
 namespace ImageProcessingLibrary.Detection.CannyEdge
 {
