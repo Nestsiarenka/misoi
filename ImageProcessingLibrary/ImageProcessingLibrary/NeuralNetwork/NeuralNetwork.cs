@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
 
@@ -16,13 +15,13 @@ namespace ImageProcessingLibrary.NeuralNetwork
 
         public NeuralNetwork(int [] layersDescription, float weightDecay, float lambda)
         {
-            layers = new Layer[layersDescription.Length - 1];
+            layers = new Layer[layersDescription.Length];
             inputCount = layersDescription[0];
             outputCount = layersDescription[layersDescription.Length - 1];
 
-            for (int i = 1; i < layersDescription.Length; i++)
+            for (int i = 1; i < layers.Length; i++)
             {
-                layers[i - 1] = new Layer(layersDescription[i], layersDescription[i-1], weightDecay, lambda);
+                layers[i] = new Layer(layersDescription[i], layersDescription[i-1], weightDecay, lambda);
             }
         }
 

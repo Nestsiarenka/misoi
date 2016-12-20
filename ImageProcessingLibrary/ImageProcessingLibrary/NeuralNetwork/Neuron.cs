@@ -42,7 +42,6 @@ namespace ImageProcessingLibrary.NeuralNetwork
             {
                 z += x[i]*w[i] + b;
             }
-            z++;
             return ActiveFunction(z);
         }
 

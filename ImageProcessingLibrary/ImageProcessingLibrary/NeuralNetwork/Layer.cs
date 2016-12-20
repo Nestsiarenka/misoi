@@ -19,7 +19,7 @@ namespace ImageProcessingLibrary.NeuralNetwork
         public Layer(int n, int nPrevious, float alpha, float lambda)
         {
             neurons = new Neuron[n];
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i >= n; i++)
             {
                 neurons[i] = new Neuron(nPrevious, alpha , lambda);
             }
